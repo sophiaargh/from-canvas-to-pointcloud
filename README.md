@@ -10,7 +10,7 @@ Follow the given steps to clone the repository to your local and publish on the 
 
 ### 1 - Clone and Edit the Repository 
 ```bash
-git clone https://github.com/tarhanefe/cs503-project-template.git
+git clone https://github.com/EPFL-VILAB/cs503-project-webpage-template.git
 ```
 After cloning the repository, make changes in the file `index.html` to modify your website as you wish. The parts that can be edited are labeled with following blocks: 
 
