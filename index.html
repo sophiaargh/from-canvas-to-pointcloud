@@ -5,10 +5,10 @@
 <!--TODO: THE METADATA OF THE WEBSITE CAN BE EDITED USING THE META TAGS BELOW -->
   <meta charset="utf-8">
   <meta name="description"
-        content="Template project website. Replace this line with a one-sentence summary of your project.">
+        content="First step towards 3D reconstruction from artistic imagery">
   <meta name="keywords" content="project website, template, research">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Project Title</title>
+  <title>From Canvas to Point Cloud: 3D reconstruction from artistic imagery</title>
 <!------------------------------------------------------------------------->
 
 
@@ -49,19 +49,19 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Project Title</h1>
+          <h1 class="title is-1 publication-title">From Canvas to Point Cloud: 3D reconstruction from artistic imagery</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://people.epfl.ch/">John Doe</a>,
+              <a href="https://www.linkedin.com/in/camille-lannoye/">Camille Lannoye</a>,
             </span>
             <span class="author-block">
-              <a href="https://people.epfl.ch/">Alice Smith</a>,
+              <a href="https://www.linkedin.com/in/emilien-silly/">Emilien Silly</a>,
             </span>
             <span class="author-block">
-              <a href="https://people.epfl.ch/">Bob Johnson</a>,
+              <a href="https://www.linkedin.com/in/quentinsandoz/">Quentin Sandoz</a>,
             </span>
             <span class="author-block">
-              <a href="https://people.epfl.ch/">Jane Doe</a>
+              <a href="https://www.linkedin.com/in/sophia-kovalenko-85056a292/">Sophia Kovalenko</a>
             </span>
           </div>
 
@@ -70,29 +70,9 @@
 <!--TODO: THE LINKS RELATED TO THE PROJECT -->
           <div class="column has-text-centered">
             <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Document</span>
-                </a>
-              </span>
-              <!-- YouTube Link. -->
-              <span class="link-block">
-                <a href="https://www.youtube.com"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
               <!-- GitHub Link. -->
               <span class="link-block">
-                <a href="https://github.com/tarhanefe/cs503-project-template"
+                <a href="https://github.com/sophiaargh/code-from-canvas-to-pointcloud"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -102,17 +82,17 @@
               </span>
               <!-- Dataset Link. -->
                 <span class="link-block">
-                  <a href="https://drive.google.com/drive/folders/13W_453e-h2TWAfAnp6Ga00TYwEzTnMtg?usp=sharing"
+                  <a href="https://huggingface.co/datasets/sophiargh/StylizedBlendedMVS"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
-                      <i class="fab fa-google-drive"></i>
+                      <i class="fa-brands fa-hugging-face"></i>
                     </span>
-                    <span>Dataset/Drive</span>
+                    <span>Benchmark</span>
                   </a>
                 </span>
               <!-- GitHub Website Link. -->
               <span class="link-block">
-                <a href="https://github.com/tarhanefe/cs503-project-template"
+                <a href="https://github.com/sophiaargh/from-canvas-to-pointcloud#"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -141,7 +121,7 @@
                 type="video/mp4">
       </video>
       <h2 class="subtitle has-text-centered">
-        <span class="dnerf">Project Name</span> one-sentence teaser about what your project does.
+        <span class="dnerf">From Canvas to Point Cloud: 3D reconstruction from artistic imagery</span> First step towards 3D reconstruction from artistic imagery.
       </h2>
     </div>
   </div>
@@ -516,6 +496,70 @@ Format the equations using LaTeX and add them to the website like this:
     height="500px"></iframe>
 </div>
 
+
+<!--------------------------------->
+<h3 class="title is-4">Interactive Plot</h3>
+<div class="box">
+
+  <!-- Dropdown selector -->
+  <div class="field" style="margin-bottom: 1rem;">
+    <div class="control">
+      <div class="select">
+        <select id="pointcloud-select" onchange="updateFrame()">
+          <option value="map_anything">Unmodified MapAnything</option>
+          <option value="lora">Classic LoRA</option>
+          <option value="lora_consistency">LoRA with consistency loss</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Toggle button -->
+    <button id="color-toggle" class="button is-light" onclick="toggleColor()" style="margin-left: 1rem;">
+      Switch to Grayscale
+    </button>
+  </div>
+
+  <!-- iframe -->
+  <iframe id="pointcloud-frame"
+          src="./static/plotly/notre_dame_color.html"
+          frameborder="0" width="100%" height="500px">
+  </iframe>
+
+</div>
+
+<script>
+  // Define your file paths for each scene
+  const scenes = {
+    map_anything: {
+      color:     "./static/plotly/notre_dame_color.html",
+      grayscale: "./static/plotly/notre_dame_grayscale.html"
+    },
+    lora: {
+      color:     "./static/plotly/eiffel_tower_color.html",
+      grayscale: "./static/plotly/eiffel_tower_grayscale.html"
+    },
+    lora_consistency: {
+      color:     "./static/plotly/eiffel_tower_color.html",
+      grayscale: "./static/plotly/eiffel_tower_grayscale.html"
+    }
+    // Add more scenes here
+  };
+
+  let isColor = true;
+
+  function updateFrame() {
+    const scene = document.getElementById('pointcloud-select').value;
+    const mode = isColor ? 'color' : 'grayscale';
+    document.getElementById('pointcloud-frame').src = scenes[scene][mode];
+  }
+
+  function toggleColor() {
+    isColor = !isColor;
+    const btn = document.getElementById('color-toggle');
+    btn.textContent = isColor ? 'Switch to Grayscale' : 'Switch to Color from source';
+    updateFrame();
+  }
+</script>
 <!--------------------------------->
 
         </div>
