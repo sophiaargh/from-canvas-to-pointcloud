@@ -1,16 +1,197 @@
-  <section class="section">
-    <div class="container is-max-desktop">
-      <!-- Results. -->
-      <div class="columns is-centered">
-        <div class="column is-full-width">
-          <h2 class="title is-3" id="results">IV. Results</h2>
-          <div class="content has-text-justified">
-            <p>
-              The results part of the report can be provided here
-            </p>
-          </div>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3" id="results">IV. Results</h2>
+
+        <!-- ─── 4.1 Grayscale & Film ─────────────────────────────────────── -->
+        <h3 class="title is-4" id="results-grayscale">
+          4.1 Robustness to Historical Image Degradation: Grayscale and Film
+        </h3>
+        <div class="content has-text-justified">
+          <p>
+            A key motivation of this project is reconstructing buildings from historical
+            photographs, which constitute out-of-distribution (OOD) data relative to modern
+            training sets. We compare the baseline model on standard RGB images against two
+            degraded variants:
+          </p>
+          <ul>
+            <li>
+              <strong>Grayscale</strong> — single-channel luminance representation replicated
+              to three channels to satisfy the model's input requirements.
+            </li>
+            <li>
+              <strong>Simulated historical film</strong> — grayscale image with added Gaussian
+              blur (radius&nbsp;=&nbsp;1.0) and Gaussian noise
+              (&mu;&nbsp;=&nbsp;0,&nbsp;&sigma;&nbsp;=&nbsp;20) to mimic vintage lens softness
+              and silver-halide film grain.
+            </li>
+          </ul>
+
+          <figure class="image" style="margin: 2rem auto; max-width: 860px;">
+            <div style="display:flex; gap:1rem; justify-content:center; align-items:flex-end;">
+              <figure style="flex:1; text-align:center; margin:0;">
+                <img src="./static/3im_photo.jpg" alt="Original RGB" style="width:100%; border-radius:4px;">
+                <figcaption style="margin-top:.5rem; font-size:.85rem; color:#555;">(a) Original RGB</figcaption>
+              </figure>
+              <figure style="flex:1; text-align:center; margin:0;">
+                <img src="./static/3im_gray.jpg" alt="Grayscale" style="width:100%; border-radius:4px;">
+                <figcaption style="margin-top:.5rem; font-size:.85rem; color:#555;">(b) Grayscale</figcaption>
+              </figure>
+              <figure style="flex:1; text-align:center; margin:0;">
+                <img src="./static/3im_film.jpg" alt="Simulated Film" style="width:100%; border-radius:4px;">
+                <figcaption style="margin-top:.5rem; font-size:.85rem; color:#555;">(c) Simulated Film</figcaption>
+              </figure>
+            </div>
+            <figcaption style="text-align:center; margin-top:1rem; font-size:.9rem; color:#444;">
+              <strong>Figure 1.</strong> Input variants used to test robustness to historical
+              image degradation.
+            </figcaption>
+          </figure>
+
+          <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
+            <img src="./static/3im_1.png" alt="AbsRel across input variants" style="width:100%; border-radius:4px;">
+            <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
+              <strong>Figure 2.</strong> AbsRel across input variants (RGB, grayscale, simulated
+              film) for all styles. Overlapping error bars indicate no statistically significant
+              difference.
+            </figcaption>
+          </figure>
+
+          <p>
+            Contrary to our initial hypothesis, AbsRel remains statistically indistinguishable
+            across all three variants for every artistic style, as evidenced by the heavily
+            overlapping error bars. This reveals that MapAnything's DINOv2-based encoder relies
+            primarily on geometric and structural cues rather than chromatic or low-level textural
+            information, making it inherently robust to color loss, lens blur, and film grain —
+            and therefore viable for direct deployment on historical archive imagery
+            <em>without</em> domain adaptation.
+          </p>
         </div>
+
+        <hr style="margin: 2.5rem 0;">
+
+        <!-- ─── 4.2 Feature-Space Normalization ──────────────────────────── -->
+        <h3 class="title is-4" id="results-normalization">
+          4.2 Feature-Space Normalization Experiments
+        </h3>
+        <div class="content has-text-justified">
+          <p>
+            Our hypothesis was that stylized inputs induce covariate shift in DINOv2's
+            intermediate activations, and that training-free Instance Normalization (IN) toward
+            <em>&Nscr;</em>(0,&thinsp;1) would act as a style-invariant regularizer. We ran an
+            ablation over two axes:
+          </p>
+          <ul>
+            <li><strong>Number of normalized layers</strong> — from 1 to 24.</li>
+            <li>
+              <strong>Cascading direction</strong> —
+              <em>front normalization</em> (layers 0, 1, 2, &hellip;) vs.
+              <em>end normalization</em> (layers 23, 22, 21, &hellip;),
+              evaluated on 20 stylized scenes.
+            </li>
+          </ul>
+
+          <figure class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
+            <img src="./static/results_norm.png" alt="Normalization ablation results" style="width:100%; border-radius:4px;">
+            <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
+              <strong>Figure 3.</strong> AbsRel as a function of number of normalized layers and
+              cascading direction, across all five styles. The dashed line marks the unmodified
+              baseline.
+            </figcaption>
+          </figure>
+
+          <p>
+            Normalization uniformly degrades performance across all styles, with AbsRel
+            increasing monotonically with the number of normalized layers in both directions.
+            The two strategies exhibit a notable <strong>crossover behaviour</strong>: end
+            normalization achieves lower AbsRel at small layer counts (1–4), but its performance
+            deteriorates steeply and overtakes front normalization around layers 8–12, after
+            which it becomes the more harmful of the two.
+          </p>
+          <p>
+            This suggests that normalizing a small number of late-stage layers — where
+            representations are more abstract and style-specific variance is lower — introduces
+            only marginal disruption. However, as more late layers are normalized, the cumulative
+            destruction of the high-level semantic structure feeding directly into the Alternating
+            Attention (AA) block becomes severe. Front normalization, by contrast, degrades early
+            spatial cues immediately but does so more uniformly, resulting in a slower degradation
+            curve. In both cases, the core conclusion holds: <strong>training-free instance
+            normalization cannot disentangle style statistics from geometric signal</strong>,
+            directly motivating our learnable AdaIN approach.
+          </p>
+        </div>
+
+        <hr style="margin: 2.5rem 0;">
+
+        <!-- ─── 4.3 AdaIN ─────────────────────────────────────────────────── -->
+        <h3 class="title is-4" id="results-adain">
+          4.3 Adaptive Instance Normalization (AdaIN)
+        </h3>
+        <div class="content has-text-justified">
+          <p>
+            To overcome the destructive effect of raw normalization, we evaluated trainable
+            AdaIN layers optimized via <strong>cross-domain distillation</strong>: a frozen
+            teacher model processes photographs while a student model (identical architecture
+            with AdaIN layers inserted) processes matched stylized inputs, supervised by an
+            L<sub>1</sub> loss on predicted depth maps and 3D point clouds:
+          </p>
+
+          <!-- Equation block -->
+          <div style="
+              background: #f8f8f8;
+              border-left: 3px solid #aaa;
+              border-radius: 4px;
+              padding: 1rem 1.5rem;
+              margin: 1.5rem 0;
+              font-family: 'Georgia', serif;
+              font-size: 1rem;
+              text-align: center;
+              overflow-x: auto;
+            ">
+            &#x2112; &nbsp;=&nbsp; &alpha; &thinsp;
+            &lVert; &#x1D49F;<sub>student</sub>(<em>X</em><sub>style</sub>) &minus;
+            &#x1D49F;<sub>teacher</sub>(<em>X</em><sub>photo</sub>) &rVert;<sub>1</sub>
+            &nbsp;+&nbsp; &beta; &thinsp;
+            &lVert; &#x1D4AB;<sub>student</sub>(<em>X</em><sub>style</sub>) &minus;
+            &#x1D4AB;<sub>teacher</sub>(<em>X</em><sub>photo</sub>) &rVert;<sub>1</sub>
+          </div>
+
+          <p>
+            where <em>&#x1D49F;</em> and <em>&#x1D4AB;</em> denote predicted depth maps and
+            point clouds respectively, and &alpha;,&thinsp;&beta; are scaling hyperparameters.
+            All MapAnything weights remain frozen; only the AdaIN affine parameters are updated
+            over one epoch on 800 paired image sets.
+          </p>
+          <p>
+            We ran the same ablation as above — varying the number of AdaIN layers (1–24) and
+            cascading direction.
+          </p>
+
+          <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
+            <img src="./static/adaIn_results.png" alt="AdaIN ablation results" style="width:100%; border-radius:4px;">
+            <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
+              <strong>Figure 4.</strong> Performance under AdaIN configurations. End cascading
+              preserves more geometric fidelity at low layer counts, but no configuration
+              surpasses the unmodified baseline.
+            </figcaption>
+          </figure>
+
+          <p>
+            The outcome mirrors the IN experiments: AdaIN uniformly underperforms the unmodified
+            baseline, end cascading is consistently less harmful than front at low layer counts
+            before both converge, and more layers correlates with steeper degradation. This
+            suggests the failure is not merely uncontrolled variance scaling but reflects a more
+            fundamental limitation: <strong>lightweight affine transformations cannot bridge the
+            complex domain gap</strong> between artistic and photographic inputs. While AdaIN
+            shifts global style statistics, it likely disrupts the fine-grained spatial
+            correlations within DINOv2's attention maps that are critical for multi-view
+            geometric reasoning. This result directly justifies the move to LoRA, which operates
+            within the attention projections themselves rather than on feature statistics.
+          </p>
+        </div>
+
       </div>
-      <!--/ Results. -->
     </div>
-  </section>
+  </div>
+</section>
