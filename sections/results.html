@@ -28,29 +28,178 @@
             </li>
           </ul>
 
-          <figure class="image" style="margin: 2rem auto; max-width: 860px;">
-            <div style="display:flex; gap:1rem; justify-content:center; align-items:flex-end;">
-              <figure style="flex:1; text-align:center; margin:0;">
-                <img src="./static/3im_photo.jpg" alt="Original RGB" style="width:100%; border-radius:4px;">
-                <figcaption style="margin-top:.5rem; font-size:.85rem; color:#555;">(a) Original RGB</figcaption>
-              </figure>
-              <figure style="flex:1; text-align:center; margin:0;">
-                <img src="./static/3im_gray.jpg" alt="Grayscale" style="width:100%; border-radius:4px;">
-                <figcaption style="margin-top:.5rem; font-size:.85rem; color:#555;">(b) Grayscale</figcaption>
-              </figure>
-              <figure style="flex:1; text-align:center; margin:0;">
-                <img src="./static/3im_film.jpg" alt="Simulated Film" style="width:100%; border-radius:4px;">
-                <figcaption style="margin-top:.5rem; font-size:.85rem; color:#555;">(c) Simulated Film</figcaption>
-              </figure>
+          <h3 class="title is-4">Three-Way Image Comparison</h3>
+            <div class="content has-text-justified">
+              <p>
+                Drag either handle to compare the original RGB, grayscale, and simulated film
+                inputs for the same scene. The left handle separates RGB from grayscale; the
+                right handle separates grayscale from simulated film.
+              </p>
             </div>
-            <figcaption style="text-align:center; margin-top:1rem; font-size:.9rem; color:#444;">
-              <strong>Figure 1.</strong> Input variants used to test robustness to historical
-              image degradation.
-            </figcaption>
-          </figure>
+            
+            <div id="triple-slider" style="
+                position: relative;
+                user-select: none;
+                overflow: hidden;
+                border-radius: 6px;
+                cursor: col-resize;
+                max-width: 860px;
+                margin: 0 auto;
+              ">
+            
+              <!-- Layer 3 (rightmost): Simulated Film — base, always full width -->
+              <img src="./static/results/3im_film.jpg" alt="Simulated Film"
+                  draggable="false"
+                  style="display:block; width:100%; height:auto;">
+            
+              <!-- Layer 2 (middle): Grayscale — clipped between handle 1 and handle 2 -->
+              <img id="tri-mid" src="./static/results/3im_gray.jpg" alt="Grayscale"
+                  draggable="false"
+                  style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
+            
+              <!-- Layer 1 (leftmost): Original RGB — clipped from 0 to handle 1 -->
+              <img id="tri-left" src="./static/results/3im_photo.jpg" alt="Original RGB"
+                  draggable="false"
+                  style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
+            
+              <!-- Labels -->
+              <span style="position:absolute; top:10px; left:10px;
+                          background:rgba(0,0,0,0.55); color:#fff;
+                          padding:3px 10px; border-radius:3px; font-size:.8rem;
+                          pointer-events:none;">
+                RGB
+              </span>
+              <span id="tri-label-mid" style="position:absolute; top:10px;
+                          background:rgba(0,0,0,0.55); color:#fff;
+                          padding:3px 10px; border-radius:3px; font-size:.8rem;
+                          pointer-events:none; transform:translateX(-50%);">
+                Grayscale
+              </span>
+              <span style="position:absolute; top:10px; right:10px;
+                          background:rgba(0,0,0,0.55); color:#fff;
+                          padding:3px 10px; border-radius:3px; font-size:.8rem;
+                          pointer-events:none;">
+                Film
+              </span>
+            
+              <!-- Handle 1 (left) -->
+              <div id="tri-handle-1" style="
+                  position:absolute; top:0; bottom:0; width:3px;
+                  background:#fff; cursor:col-resize;
+                  transform:translateX(-50%); z-index:10;">
+                <div style="
+                    position:absolute; top:50%; left:50%;
+                    transform:translate(-50%,-50%);
+                    width:30px; height:30px; border-radius:50%;
+                    background:#fff;
+                    display:flex; align-items:center; justify-content:center;
+                    box-shadow:0 2px 8px rgba(0,0,0,.45);
+                    font-size:.75rem; color:#333; gap:1px;">
+                  &#10094;&#10095;
+                </div>
+              </div>
+            
+              <!-- Handle 2 (right) -->
+              <div id="tri-handle-2" style="
+                  position:absolute; top:0; bottom:0; width:3px;
+                  background:#fff; cursor:col-resize;
+                  transform:translateX(-50%); z-index:10;">
+                <div style="
+                    position:absolute; top:50%; left:50%;
+                    transform:translate(-50%,-50%);
+                    width:30px; height:30px; border-radius:50%;
+                    background:#fff;
+                    display:flex; align-items:center; justify-content:center;
+                    box-shadow:0 2px 8px rgba(0,0,0,.45);
+                    font-size:.75rem; color:#333; gap:1px;">
+                  &#10094;&#10095;
+                </div>
+              </div>
+            </div>
+            
+            <script>
+              (function () {
+                const container  = document.getElementById('triple-slider');
+                const leftImg    = document.getElementById('tri-left');
+                const midImg     = document.getElementById('tri-mid');
+                const handle1    = document.getElementById('tri-handle-1');
+                const handle2    = document.getElementById('tri-handle-2');
+                const midLabel   = document.getElementById('tri-label-mid');
+                const MIN_GAP    = 5; // minimum % gap between the two handles
+            
+                let h1 = 33, h2 = 66;
+                let dragging = null;
+            
+                function update() {
+                  // Position the handle bars
+                  handle1.style.left = h1 + '%';
+                  handle2.style.left = h2 + '%';
+            
+                  // RGB: visible from 0 → h1
+                  leftImg.style.clipPath = `inset(0 ${100 - h1}% 0 0)`;
+            
+                  // Grayscale: visible from h1 → h2
+                  midImg.style.clipPath = `inset(0 ${100 - h2}% 0 ${h1}%)`;
+            
+                  // Film (base layer): no clip needed
+            
+                  // Centre the Grayscale label between the two handles
+                  midLabel.style.left = ((h1 + h2) / 2) + '%';
+                }
+            
+                function getPct(clientX) {
+                  const rect = container.getBoundingClientRect();
+                  return Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+                }
+            
+                function pointerX(e) {
+                  return e.touches && e.touches.length ? e.touches[0].clientX : e.clientX;
+                }
+            
+                // Start dragging
+                handle1.addEventListener('mousedown',  (e) => { dragging = 1; e.preventDefault(); });
+                handle2.addEventListener('mousedown',  (e) => { dragging = 2; e.preventDefault(); });
+                handle1.addEventListener('touchstart', ()  => { dragging = 1; }, { passive: true });
+                handle2.addEventListener('touchstart', ()  => { dragging = 2; }, { passive: true });
+            
+                // Move
+                function onMove(e) {
+                  if (!dragging) return;
+                  const pct = getPct(pointerX(e));
+                  if (dragging === 1) h1 = Math.max(0,        Math.min(pct, h2 - MIN_GAP));
+                  if (dragging === 2) h2 = Math.max(h1 + MIN_GAP, Math.min(pct, 100));
+                  update();
+                }
+            
+                window.addEventListener('mousemove',  onMove);
+                window.addEventListener('touchmove',  onMove, { passive: true });
+            
+                // Stop dragging
+                window.addEventListener('mouseup',   () => { dragging = null; });
+                window.addEventListener('touchend',  () => { dragging = null; });
+            
+                // Keyboard support: Tab to focus a handle, arrow keys to move it
+                handle1.setAttribute('tabindex', '0');
+                handle2.setAttribute('tabindex', '0');
+                handle1.setAttribute('role', 'slider');
+                handle2.setAttribute('role', 'slider');
+            
+                handle1.addEventListener('keydown', (e) => {
+                  if (e.key === 'ArrowLeft')  { h1 = Math.max(0,        h1 - 2); update(); e.preventDefault(); }
+                  if (e.key === 'ArrowRight') { h1 = Math.min(h2 - MIN_GAP, h1 + 2); update(); e.preventDefault(); }
+                });
+                handle2.addEventListener('keydown', (e) => {
+                  if (e.key === 'ArrowLeft')  { h2 = Math.max(h1 + MIN_GAP, h2 - 2); update(); e.preventDefault(); }
+                  if (e.key === 'ArrowRight') { h2 = Math.min(100, h2 + 2); update(); e.preventDefault(); }
+                });
+            
+                // Initialise
+                update();
+              })();
+            </script>
 
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
-            <img src="./static/3im_1.png" alt="AbsRel across input variants" style="width:100%; border-radius:4px;">
+            <img src="./static/results/3im_1.png" alt="AbsRel across input variants" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
               <strong>Figure 2.</strong> AbsRel across input variants (RGB, grayscale, simulated
               film) for all styles. Overlapping error bars indicate no statistically significant
@@ -63,9 +212,12 @@
             across all three variants for every artistic style, as evidenced by the heavily
             overlapping error bars. This reveals that MapAnything's DINOv2-based encoder relies
             primarily on geometric and structural cues rather than chromatic or low-level textural
-            information, making it inherently robust to color loss, lens blur, and film grain —
+            information, making it inherently robust to color loss, lens blur, and film grain, 
             and therefore viable for direct deployment on historical archive imagery
-            <em>without</em> domain adaptation.
+            <em>without</em> domain adaptation. However, this
+            robustness does not extend to artistic media (paintings, sketches, engravings),
+            where the domain gap stems from structural style shifts rather than mere signal
+            degradation, as addressed in the following sections.
           </p>
         </div>
 
@@ -93,7 +245,7 @@
           </ul>
 
           <figure class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
-            <img src="./static/results_norm.png" alt="Normalization ablation results" style="width:100%; border-radius:4px;">
+            <img src="./static/results/results_norm.png" alt="Normalization ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
               <strong>Figure 3.</strong> AbsRel as a function of number of normalized layers and
               cascading direction, across all five styles. The dashed line marks the unmodified
@@ -137,25 +289,26 @@
             L<sub>1</sub> loss on predicted depth maps and 3D point clouds:
           </p>
 
-          <!-- Equation block -->
           <div style="
-              background: #f8f8f8;
-              border-left: 3px solid #aaa;
-              border-radius: 4px;
-              padding: 1rem 1.5rem;
-              margin: 1.5rem 0;
-              font-family: 'Georgia', serif;
-              font-size: 1rem;
-              text-align: center;
-              overflow-x: auto;
-            ">
-            &#x2112; &nbsp;=&nbsp; &alpha; &thinsp;
-            &lVert; &#x1D49F;<sub>student</sub>(<em>X</em><sub>style</sub>) &minus;
-            &#x1D49F;<sub>teacher</sub>(<em>X</em><sub>photo</sub>) &rVert;<sub>1</sub>
-            &nbsp;+&nbsp; &beta; &thinsp;
-            &lVert; &#x1D4AB;<sub>student</sub>(<em>X</em><sub>style</sub>) &minus;
-            &#x1D4AB;<sub>teacher</sub>(<em>X</em><sub>photo</sub>) &rVert;<sub>1</sub>
-          </div>
+            background: #f8f8f8;
+            border-left: 3px solid #aaa;
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Georgia', serif;
+            font-size: 1rem;
+            text-align: center;
+            overflow-x: auto;
+          ">
+          <em>L</em> &nbsp;=&nbsp;
+          &alpha; &thinsp;
+          ||&thinsp;<em>D</em><sub>student</sub>(<em>X</em><sub>style</sub>)
+          &minus; <em>D</em><sub>teacher</sub>(<em>X</em><sub>photo</sub>)&thinsp;||<sub>1</sub>
+          &nbsp;+&nbsp;
+          &beta; &thinsp;
+          ||&thinsp;<em>P</em><sub>student</sub>(<em>X</em><sub>style</sub>)
+          &minus; <em>P</em><sub>teacher</sub>(<em>X</em><sub>photo</sub>)&thinsp;||<sub>1</sub>
+        </div>
 
           <p>
             where <em>&#x1D49F;</em> and <em>&#x1D4AB;</em> denote predicted depth maps and
@@ -169,7 +322,7 @@
           </p>
 
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
-            <img src="./static/adaIn_results.png" alt="AdaIN ablation results" style="width:100%; border-radius:4px;">
+            <img src="./static/results/adaIn_results.png" alt="AdaIN ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
               <strong>Figure 4.</strong> Performance under AdaIN configurations. End cascading
               preserves more geometric fidelity at low layer counts, but no configuration
