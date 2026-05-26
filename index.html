@@ -85,7 +85,8 @@
                   <a href="https://huggingface.co/datasets/sophiargh/StylizedBlendedMVS"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
-                      <i class="fa-brands fa-hugging-face"></i>
+                      <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
+                          style="width: 1.2em; height: 1.2em;">
                     </span>
                     <span>Benchmark</span>
                   </a>
@@ -115,14 +116,32 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <!-- TODO: Replace with your teaser image, gif or video file. Choose something that represents your project. -->
+
+      <!-- Input images -->
+      <h2 class="subtitle has-text-centered" style="margin-bottom: 0.75rem;">
+        <strong>Input</strong>
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 1.5rem;align-items: end;">
+        <img src="./static/images/notre-dame/47621871601_0c5c413191_b.jpg" style="width: 100%; border-radius: 4px;object-fit: cover; height: 150px;">
+        <img src="./static/images/notre-dame/32679206327_0a7005f251_c.jpg" style="width: 100%; border-radius: 4px;object-fit: cover; height: 150px;">
+        <img src="./static/images/notre-dame/33744538348_79c216574c_c.jpg" style="width: 100%; border-radius: 4px;object-fit: cover; height: 150px;">
+        <img src="./static/images/notre-dame/coloring-paris-73814.jpg" style="width: 100%; border-radius: 4px;object-fit: cover; height: 150px;">
+        <img src="./static/images/notre-dame/f_volynskih-mariya-notre-dame-de-paris-front-0.jpg" style="width: 100%; border-radius: 4px;object-fit: cover; height: 150px;">
+        <img src="./static/images/notre-dame/47621871891_fb02ff89a6_b.jpg" style="width: 100%; border-radius: 4px;object-fit: cover; height: 150px;">
+      </div>
+
+      <!-- Output video -->
+      <h2 class="subtitle has-text-centered" style="margin-bottom: 0.75rem;">
+        <strong>Output</strong>
+      </h2>
       <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/teaser.mp4"
-                type="video/mp4">
+        <source src="./static/videos/notre_dame.mp4" type="video/mp4">
       </video>
+
       <h2 class="subtitle has-text-centered">
         <span class="dnerf">From Canvas to Point Cloud: 3D reconstruction from artistic imagery</span> First step towards 3D reconstruction from artistic imagery.
       </h2>
+
     </div>
   </div>
 </section>
@@ -467,12 +486,12 @@
       <div class="columns is-centered">
         <div class="column is-three-quarters">
           <div align="center" class="box">
-            <img src="static/images/related_2.gif"
-              alt="3D Bezier curves are used for representing 3D sketches of objects.">
+            <img src="static/gifs/scan6_icp_convergence.gif"
+              alt="ICP alignment">
             <h5 class="subtitle has-text-centered">
               <font size="-0.7">
                 <span style="font-weight:normal">
-                  Write about the media displayed in the card here. You can also add a link to the media if needed.
+                  ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the pointclouds are in a different scale and position.
                 </span>
               </font>
             </h5>
@@ -561,7 +580,6 @@ Format the equations using LaTeX and add them to the website like this:
     height="500px"></iframe>
 </div>
 
-
 <!--------------------------------->
 <h3 class="title is-4">Interactive Plot</h3>
 <div class="box">
@@ -586,7 +604,7 @@ Format the equations using LaTeX and add them to the website like this:
 
   <!-- iframe -->
   <iframe id="pointcloud-frame"
-          src="./static/plotly/notre_dame_color.html"
+          src="./static/plotly/notre_dame_base_color.html"
           frameborder="0" width="100%" height="500px">
   </iframe>
 
@@ -596,16 +614,16 @@ Format the equations using LaTeX and add them to the website like this:
   // Define your file paths for each scene
   const scenes = {
     map_anything: {
-      color:     "./static/plotly/notre_dame_color.html",
-      grayscale: "./static/plotly/notre_dame_grayscale.html"
+      color:     "./static/plotly/notre_dame_base_color.html",
+      grayscale: "./static/plotly/notre_dame_base.html"
     },
     lora: {
-      color:     "./static/plotly/eiffel_tower_color.html",
-      grayscale: "./static/plotly/eiffel_tower_grayscale.html"
+      color:     "./static/plotly/notre_dame_lora_color.html",
+      grayscale: "./static/plotly/notre_dame_lora.html"
     },
     lora_consistency: {
-      color:     "./static/plotly/eiffel_tower_color.html",
-      grayscale: "./static/plotly/eiffel_tower_grayscale.html"
+      color:     "./static/plotly/notre_dame_lora_consistency_color.html",
+      grayscale: "./static/plotly/notre_dame_lora_consistency.html"
     }
     // Add more scenes here
   };
