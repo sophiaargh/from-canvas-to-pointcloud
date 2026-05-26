@@ -20,7 +20,10 @@ function setInterpolationImage(i) {
 }
 
 
-$(document).ready(function() {
+// The page sections are injected asynchronously by static/js/include.js, so we
+// wait for its "includes:loaded" event before wiring up carousels, sliders and
+// the interpolation preview (the target elements live inside the fragments).
+function initPage() {
     var options = {
 			slidesToScroll: 1,
 			slidesToShow: 3,
@@ -67,4 +70,6 @@ $(document).ready(function() {
 
     bulmaSlider.attach();
 
-})
+}
+
+document.addEventListener('includes:loaded', initPage);
