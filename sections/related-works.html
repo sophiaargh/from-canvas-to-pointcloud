@@ -5,9 +5,14 @@
         <div class="column is-full-width">
           <h2 class="title is-3" id="related-work">II. Related Works</h2>
           <div class="content has-text-justified">
+            <h3>Feed-forward 3D Reconstruction</h3>
             <p>
-              The related works part of the report can be provided here
+              Classical pipelines rely on structure-from-motion and multi-view stereo \cite{schoenberger2016sfm, schoenberger2016mvs}, but recent models such as DUSt3R \cite{wang2024dust3rgeometric3dvision}, MASt3R \cite{leroy2024groundingimagematching3d}, MapAnything \cite{keetha2026mapanythinguniversalfeedforwardmetric} and VGGT~\cite{wang2025vggtvisualgeometrygrounded} regress geometry end-to-end from image collections. Alternative paradigms such as NeRF~\cite{mildenhall2020nerfrepresentingscenesneural} and 3D Gaussian Splatting~\cite{kerbl20233dgaussiansplattingrealtime} achieve high fidelity but require per-scene optimization and dense photographic inputs, making them poorly suited to sparse or stylized historical sources. We build on MapAnything and address a setting none of these models were designed for: reconstruction under artistic style shift.
             </p>
+            <h3>Robustness, Style, and Domain Shift</h3>
+            <p>ImageNet-C~\cite{hendrycks2019benchmarkingneuralnetworkrobustness} and RobustMVD~\cite{schroppel2022benchmarkbaselinerobustmultiview} established that vision models degrade significantly under distribution shift. Stylized-ImageNet~\cite{geirhos2022imagenettrainedcnnsbiasedtexture} further showed that learned features are often biased toward texture rather than shape — a direct concern for geometric reconstruction. We generate our stylized benchmark using diffusion-based stylization tools~\cite{hertz2024stylealignedimagegeneration, ohm2025fruitsalad}, which enable consistent multi-view style transfer, critical for preserving cross-view coherence in our evaluation.</p>
+            <h3>Encoders, Adaptation, and Heritage</h3>
+            <p>MapAnything's frozen DINOv2~\cite{oquab2024dinov2learningrobustvisual} encoder was not trained for style-invariant representations. We adapt it using LoRA~\cite{hu2021loralowrankadaptationlarge}, a parameter-efficient fine-tuning method that minimizes computational overhead. Prior work on heritage reconstruction has mostly relied on photogrammetry~\cite{rs3061104}; work on painting-to-3D alignment~\cite{Aubry13} focused on viewpoint matching rather than dense reconstruction. Our work is the first to target dense geometry recovery from purely artistic inputs.</p>
           </div>
         </div>
       </div>

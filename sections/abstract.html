@@ -8,16 +8,15 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            <!-- TODO: Replace this abstract with your own project summary (3-5 sentences). -->
-            [Problem] Briefly describe the problem your project tackles and why it matters.
+            Feed-forward 3D reconstruction models such as MapAnything are highly sensitive to artistic style variation, limiting reconstruction from paintings, sketches, and engravings. 
           </p>
           <p>
-            [Approach] Explain your main idea, model, or system in one to two sentences.
+            We introduce a stylized multi-view benchmark derived from BlendedMVS using diffusion-based style transfer while preserving ground-truth geometry and camera poses. We evaluate several adaptation strategies for improving robustness under artistic domain shift, including feature-space normalization, AdaIN, and LoRA-based fine-tuning of the DINOv2 encoder
           </p>
           <p>
-            [Results] Summarize key outcomes, such as quantitative improvements, qualitative
-            observations, and main conclusions.
+            While normalization-based methods consistently degrade performance, LoRA improves depth estimation on stylized inputs, reducing AbsRel from 0.154 to 0.128 on impressionist scenes while preserving performance on photographs. However, these gains do not fully translate to improved point cloud quality, highlighting the difficulty of achieving style-invariant geometric reasoning.
           </p>
+          <p>Our benchmark and analyses provide a first step toward robust 3D reconstruction from artistic and historical imagery.</p>
         </div>
       </div>
     </div>
@@ -69,15 +68,7 @@
                 </p>
               </a>
             </div>
-<!--- TODO: Remove this part, this is here to show you possible visualizations used in the website ---------------->
 
-            <div class="tile is-parent">
-              <a href="#visual_items" class="tile is-child box">
-                <p class="subtitle">
-                  <font size="-1">Visual Items</font>
-                </p>
-              </a>
-            </div>
           </div>
 
         </div>

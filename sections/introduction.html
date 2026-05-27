@@ -6,7 +6,34 @@
           <h2 class="title is-3" id="intro">I. Introduction</h2>
           <div class="content has-text-justified">
             <p>
-              The introduction part of the report can be provided here
+              Three-dimensional reconstruction from images has advanced rapidly in recent years. 
+              Modern feed-forward models such as MapAnything \cite{keetha2026mapanythinguniversalfeedforwardmetric} 
+              can directly infer camera poses, metric depth, and dense point clouds from sparse image collections 
+              without requiring expensive per-scene optimization. However, these models are trained almost exclusively 
+              on natural photographs and implicitly assume photorealistic image statistics. 
+              As a result, their geometric reasoning degrades under strong visual distribution shifts such as paintings, sketches, engravings, or watercolour renderings.
+            </p>  
+            <p> 
+              This limitation is particularly relevant for cultural heritage and historical reconstruction. 
+              Many destroyed, modified, or inaccessible buildings are documented only through artistic media rather than photographs. 
+              Examples include pre-photography architectural sketches, paintings of ancient cities, engraved archaeological records, 
+              and artistic reconstructions of monuments that no longer exist. Existing reconstruction pipelines cannot reliably leverage 
+              such sources because artistic styles alter texture, edges, shading, and local spatial statistics in ways that violate the assumptions learned during training.
+            </p>
+            <p>
+              In this work, we study artistic style shift as a robustness problem for feed-forward 3D reconstruction. 
+              Using MapAnything as a case study, we first quantify how reconstruction quality changes under controlled stylization of multi-view scenes. 
+              We introduce a benchmark built from BlendedMVS where each scene is rendered into multiple artistic domains 
+              while preserving the original geometry and camera poses. We then investigate whether style robustness can be recovered
+               through lightweight encoder adaptations, including feature normalization, Adaptive Instance Normalization (AdaIN), and LoRA-based fine-tuning. 
+               We additionally evaluate a destylization pipeline that attempts to recover photorealistic inputs before reconstruction, 
+               as well as mixed-source scenarios combining photographs and artistic views within the same reconstruction set.
+            </p>
+            <p>
+              Our work addresses the following questions: (1) How severely does artistic style shift affect feed-forward geometric reconstruction? 
+              (2) Can lightweight encoder adaptations recover style-invariant geometric features? 
+              (3) Is destylization a viable alternative to direct model adaptation? and 
+              (4) How robust are reconstruction models when photographs and stylized images are mixed at inference time?
             </p>
           </div>
         </div>
