@@ -6,11 +6,54 @@
           <h2 class="title is-3" id="conclusion">VI. Conclusion and Limitations</h2>
           <div class="content has-text-justified">
             <p>
-              The conclusion and limitations part of the report can be provided here
+              We studied the impact of artistic domain shift on feed-forward 3D reconstruction using MapAnything as a case study.
+               To do so, we introduced a stylized multi-view benchmark derived from BlendedMVS, enabling controlled evaluation 
+               across multiple artistic styles while preserving ground-truth geometry and camera poses. 
+               Our experiments show that artistic stylization consistently degrades reconstruction quality, 
+               whereas grayscale and historical film degradations have little impact, indicating that the main challenge comes from 
+               structural style variation rather than low-level image corruption.
+            </p>
+            <p>Among the evaluated adaptation strategies, feature normalization and AdaIN consistently degraded performance, 
+              suggesting that simple feature-statistic alignment destroys geometric information required for multi-view reasoning. 
+              LoRA-based adaptation achieved the best results, improving depth estimation robustness on stylized inputs while preserving performance on photographs. 
+              However, these gains did not consistently translate into improved point cloud quality, highlighting the difficulty of achieving globally coherent style-invariant reconstruction.
+            </p>
+            <p>Our work is limited by the use of synthetic stylization, limited compute resources, and lightweight adaptation methods. 
+              Future work could explore larger-scale training, real historical artistic datasets, and stronger end-to-end adaptation strategies. 
+              Beyond cultural heritage reconstruction, style-robust 3D reconstruction could also benefit robotics, simulation, and reconstruction from synthetic or generated imagery.
             </p>
           </div>
         </div>
       </div>
       <!--/ Conclusion and Limitations. -->
+    </div>
+  </section>
+
+
+  <!-- References. -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3" id="references">References</h2>
+      <div class="content">
+        <ol>
+          <li id="ref1">J. L. Schönberger and J.-M. Frahm. "<a href="https://doi.org/10.1109/CVPR.2016.445" target="_blank" rel="noopener">Structure-from-Motion Revisited</a>." Proc. CVPR, 2016.</li>
+          <li id="ref2">J. L. Schönberger, E. Zheng, J.-M. Frahm and M. Pollefeys. "Pixelwise View Selection for Unstructured Multi-View Stereo." Computer Vision — ECCV 2016, Springer, 2016, pp. 501–518.</li>
+          <li id="ref3">S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii and J. Revaud. "<a href="https://arxiv.org/abs/2312.14132" target="_blank" rel="noopener">DUSt3R: Geometric 3D Vision Made Easy</a>." arXiv:2312.14132, 2024.</li>
+          <li id="ref4">V. Leroy, Y. Cabon and J. Revaud. "<a href="https://arxiv.org/abs/2406.09756" target="_blank" rel="noopener">Grounding Image Matching in 3D with MASt3R</a>." arXiv:2406.09756, 2024.</li>
+          <li id="ref5">N. Keetha et al. "<a href="https://arxiv.org/abs/2509.13414" target="_blank" rel="noopener">MapAnything: Universal Feed-Forward Metric 3D Reconstruction</a>." arXiv:2509.13414, 2026.</li>
+          <li id="ref6">J. Wang, M. Chen, N. Karaev, A. Vedaldi, C. Rupprecht and D. Novotny. "<a href="https://arxiv.org/abs/2503.11651" target="_blank" rel="noopener">VGGT: Visual Geometry Grounded Transformer</a>." arXiv:2503.11651, 2025.</li>
+          <li id="ref7">B. Mildenhall, P. P. Srinivasan, M. Tancik, J. T. Barron, R. Ramamoorthi and R. Ng. "<a href="https://arxiv.org/abs/2003.08934" target="_blank" rel="noopener">NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis</a>." arXiv:2003.08934, 2020.</li>
+          <li id="ref8">B. Kerbl, G. Kopanas, T. Leimkühler and G. Drettakis. "<a href="https://arxiv.org/abs/2308.04079" target="_blank" rel="noopener">3D Gaussian Splatting for Real-Time Radiance Field Rendering</a>." arXiv:2308.04079, 2023.</li>
+          <li id="ref9">D. Hendrycks and T. Dietterich. "<a href="https://arxiv.org/abs/1903.12261" target="_blank" rel="noopener">Benchmarking Neural Network Robustness to Common Corruptions and Perturbations</a>." arXiv:1903.12261, 2019.</li>
+          <li id="ref10">P. Schröppel, J. Bechtold, A. Amiranashvili and T. Brox. "<a href="https://arxiv.org/abs/2209.06681" target="_blank" rel="noopener">A Benchmark and a Baseline for Robust Multi-view Depth Estimation</a>." arXiv:2209.06681, 2022.</li>
+          <li id="ref11">R. Geirhos, P. Rubisch, C. Michaelis, M. Bethge, F. A. Wichmann and W. Brendel. "<a href="https://arxiv.org/abs/1811.12231" target="_blank" rel="noopener">ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness</a>." arXiv:1811.12231, 2022.</li>
+          <li id="ref12">A. Hertz, A. Voynov, S. Fruchter and D. Cohen-Or. "<a href="https://arxiv.org/abs/2312.02133" target="_blank" rel="noopener">Style Aligned Image Generation via Shared Attention</a>." arXiv:2312.02133, 2024.</li>
+          <li id="ref13">T. Ohm, A. Karjus, M. V. Tamm and M. Schich. "fruit-SALAD: A Style Aligned Artwork Dataset to reveal similarity perception in image embeddings." <a href="https://doi.org/10.1038/s41597-025-04529-4" target="_blank" rel="noopener">Scientific Data, vol.12, no.1, p.254, 2025</a>.</li>
+          <li id="ref14">M. Oquab et al. "<a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">DINOv2: Learning Robust Visual Features without Supervision</a>." arXiv:2304.07193, 2024.</li>
+          <li id="ref15">E. J. Hu, Y. Shen, P. Wallis, Z. A.-Z., Y. Li, S. Wang, L. Wang and W. Chen. "<a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener">LoRA: Low-Rank Adaptation of Large Language Models</a>." arXiv:2106.09685, 2021.</li>
+          <li id="ref16">F. Remondino. "<a href="https://www.mdpi.com/2072-4292/3/6/1104" target="_blank" rel="noopener">Heritage Recording and 3D Modeling with Photogrammetry and 3D Scanning</a>." Remote Sensing, vol.3, no.6, pp.1104–1138, 2011.</li>
+          <li id="ref17">M. Aubry, B. C. Russell and J. Sivic. "<a href="https://doi.org/10.1145/2591009" target="_blank" rel="noopener">Painting-to-3D model alignment via discriminative visual elements</a>." ACM Trans. Graph., vol.33, no.2, Art. 14, 2014.</li>
+        </ol>
+      </div>
     </div>
   </section>
