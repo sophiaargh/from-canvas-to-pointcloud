@@ -511,7 +511,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
             <img src="./static/results/3im_1.png" alt="AbsRel across input variants" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 2.</strong> AbsRel across input variants (RGB, grayscale, simulated
+              <strong>Figure 1.</strong> AbsRel across input variants (RGB, grayscale, simulated
               film) for all styles. Overlapping error bars indicate no statistically significant
               difference.
             </figcaption>
@@ -557,7 +557,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
             <img src="./static/results/results_norm.png" alt="Normalization ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 3.</strong> AbsRel as a function of number of normalized layers and
+              <strong>Figure 2.</strong> AbsRel as a function of number of normalized layers and
               cascading direction, across all five styles. The dashed line marks the unmodified
               baseline.
             </figcaption>
@@ -634,7 +634,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
             <img src="./static/results/adaIn_results.png" alt="AdaIN ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 4.</strong> Performance under AdaIN configurations. End cascading
+              <strong>Figure 3.</strong> Performance under AdaIN configurations. End cascading
               preserves more geometric fidelity at low layer counts, but no configuration
               surpasses the unmodified baseline.
             </figcaption>
@@ -727,7 +727,7 @@
           </p>
           <p>
             This trade-off is further corroborated by qualitative inspection. The depth map
-            comparison (Figure&nbsp;<a href="#fig-depth-maps">5</a>) favors LoRA with
+            comparison (Figure&nbsp;<a href="#fig-depth-maps">4</a>) favors LoRA with
             consistency loss, which produces the cleanest per-pixel depth estimates with the
             least edge and boundary artifacts. The qualitative point cloud comparison of the reconstruction of Notre Dame <a href="#fig-mini-benchmark">here</a> tells the opposite story: the
             unmodified MapAnything struggles with stylized inputs, while plain LoRA yields the
@@ -827,7 +827,7 @@
                  alt="Qualitative comparison of predicted depth maps across the three models"
                  style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 5.</strong> Qualitative comparison of predicted depth maps across
+              <strong>Figure 4.</strong> Qualitative comparison of predicted depth maps across
               the three models. The unmodified MapAnything baseline exhibits visible artifacts
               at object boundaries and edges. LoRA without consistency loss partially alleviates
               this, while LoRA with consistency loss produces the cleanest depth estimates, with
@@ -909,6 +909,7 @@
                         Qualitative evaluation over our mini benchmark of real images. We see that the Unmodified MapAnything struggles with the reconstruction. The best reconstruction comes from the classic LoRA.
                         </span>
                     </font>
+            </h5>
             </div>
 
             <script>
