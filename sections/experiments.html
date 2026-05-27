@@ -140,13 +140,13 @@
                     </tr>
                     <tr>
                       <td>Engraving</td>
-                      <td>0.211</td>
+                      <td><strong>0.211</strong></td>
                       <td>43.97</td>
                     </tr>
                     <tr>
                       <td>Impressionism</td>
                       <td>0.141</td>
-                      <td>35.21</td>
+                      <td><strong>35.21</strong></td>
                     </tr>
                   </tbody>
                 </table>
@@ -169,6 +169,8 @@
               distributional shift between training and test images is a primary source of
               performance degradation.
               </p>
+              <p>The results further suggest that even a small proportion of photographic inputs helps stabilize reconstruction quality, 
+                leading to lower reconstruction error compared to fully stylized input sets.</p>
 
             <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
                 <img src="./static/results/stylized_ratio.png" alt="Stylization ratio results" style="width:100%; border-radius:4px;">
@@ -546,10 +548,17 @@
             feeding them to the model. Since MapAnything directly assigns input pixel colors to
             the reconstructed 3D points without processing them through the learned architecture,
             stylized images would produce point clouds colored with artistic hues rather than
-            true scene appearance. Rather than introducing an additional color-correction
+            true scene appearance, as seen in the Figure below. Rather than introducing an additional color-correction
             mechanism, we simply convert all inputs to grayscale, ensuring the reconstructed
             geometry is visually interpretable regardless of the input style.
           </p>
+
+          <figure class="image" style="margin: 2rem auto; max-width: 680px; text-align:center;">
+            <img src="./static/results/color-artifact.jpeg" alt="Color artifacts on the predictions" style="width:100%; border-radius:4px;">
+            <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
+              Color artifacts introduced by the stylized images when predicting the pointclouds using LoRA.
+            </figcaption>
+          </figure>
 
           <p><strong>Evaluation Protocol.</strong>
             We compare three models: the unmodified MapAnything baseline, LoRA without
@@ -585,8 +594,7 @@
             This trade-off is further corroborated by qualitative inspection. The depth map
             comparison (Figure&nbsp;<a href="#fig-depth-maps">5</a>) favors LoRA with
             consistency loss, which produces the cleanest per-pixel depth estimates with the
-            least edge and boundary artifacts. The point cloud comparison
-            (Figure&nbsp;<a href="#fig-mini-benchmark">6</a>) tells the opposite story: the
+            least edge and boundary artifacts. The qualitative point cloud comparison of the reconstruction of Notre Dame <a href="#fig-mini-benchmark">here</a> tells the opposite story: the
             unmodified MapAnything struggles with stylized inputs, while plain LoRA yields the
             most visually coherent 3D reconstructions. Together, these observations highlight
             a fundamental tension — the consistency loss improves local, per-pixel depth
@@ -698,7 +706,11 @@
         <!-- ─── Mini benchmark qualitative ───────────────────────────────── -->
         <h3 id="fig-mini-benchmark" class="title is-4">Reconstruction from painting and sketches of Notre Dame the Paris</h3>
             <p>
-            For a final qualitative evaluation, we apply our models on a sample of our mini benchmark of paintings. 
+            For a final qualitative evaluation, we apply our models on a sample of our mini benchmark composed of historical photographs, 
+            sketches, and paintings of Notre-Dame de Paris.
+            Since no ground-truth point clouds are available for the real historical and artistic sources,
+             the benchmark is intended for qualitative comparison only. 
+             The figure below illustrates the reconstruction outputs across models. 
             </p>
             <h4 class="subtitle has-text-centered" style="margin-bottom: 0.75rem;">
                 <strong>Input</strong>

@@ -20,7 +20,7 @@
 
 
             <p>
-              As shown in Fig.&nbsp;1, we generate stylized variants (Impressionism, Oil
+              As shown in the Figure below, we generate stylized variants (Impressionism, Oil
               painting, Engraving, Watercolour) of BlendedMVS while preserving 3D geometry.
               To do this we use <a href="https://tele-ai.github.io/TeleStyle/"><em>TeleStyle</em></a>,
               a content-preserving style-transfer model built on Qwen-Image-Edit-2509. It takes a content and a
@@ -170,7 +170,7 @@
               from public archives. This selection is motivated by a concrete real-world 
               scenario: recovering the 3D geometry of structures that have been transformed, 
               damaged, or lost over time, for which only heterogeneous artistic documentation 
-              remains. This creates a mini benchmark for qualitative evaluation, as GT pointclouds are not available.
+              remains. This creates a mini benchmark for qualitative evaluation, as ground truth pointclouds are not available.
             </p>
           <!-- ===================================================================== -->
           <!-- Evaluation                                               -->
@@ -193,7 +193,7 @@
               style from each image before passing it to MapAnything&mdash;a
               <em>destylization</em> pre-processing step&mdash;so as to recover an
               approximation of the original photograph. Such a pipeline would test whether
-              the reconstruction gap introduced by stylization (Table&nbsp;1<!-- TODO(team): link to the baseline results Table in the Results section once it exists -->)
+              the reconstruction gap introduced by stylization (Table; <a href="#tab-baseline">1</a>)
               can be closed by style removal alone, without any architectural adaptation.
             </p>
             <p>
