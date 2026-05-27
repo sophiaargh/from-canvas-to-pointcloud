@@ -218,23 +218,28 @@
               away the geometry. No setting achieves both (see the slider below).
             </p>
             <p>
-              We quantify the fidelity of each destylized output using DINOv2 cosine
-              similarity to the original photograph as a proxy for semantic proximity,
-              averaged over more than 100 scenes. As shown in the chart below, ControlNet
-              img2img destylization <em>lowers</em> this similarity for every style: across
-              watercolour, oil painting, impressionism, and engraving, the destylized images
-              are consistently less similar to the source photograph than the stylized
-              inputs they were derived from. The drop is uniform &mdash; for example, oil
-              painting falls from 0.84 to 0.66 and impressionism from 0.59 to 0.41. Rather
-              than recovering the original photograph, destylization moves each image
-              further away from it.
+              We quantify each destylized output by its DINOv2 cosine similarity to the
+              original photograph, a proxy for semantic proximity. To probe the pipeline
+              fully, we jointly swept its two coupled knobs &mdash; the img2img denoising
+              strength and the ControlNet conditioning scale &mdash; and compared each
+              combination against a matched baseline: the stylized inputs on the same frames
+              (heatmap below; scene_0, eight frames across the four styles). <em>Every</em>
+              combination falls below that stylized baseline of 0.85. The best cell (strength
+              0.20, conditioning scale 1.30) reaches only 0.78 &mdash; still 0.07 below the
+              untouched stylized input, and it gets there only by barely altering the image.
+              Pushing strength up to actually remove the style collapses similarity (to 0.19
+              at strength 0.65), and raising the conditioning scale recovers little.
             </p>
             <p>
-              Since destylization fails to bring the images closer to the photographic
-              domain &mdash; and in fact pushes them further away &mdash; it cannot serve as
-              a pre-processing step that closes the reconstruction gap. We consequently
-              discard destylization as a baseline and focus exclusively on architectural
-              adaptations that operate directly on stylized inputs.
+              Destylization therefore not only fails to recover photographic similarity but
+              actively reduces it at every point on the grid: it cannot remove the artistic
+              style without moving the image further from the photograph. As a pre-processing
+              step it cannot close the reconstruction gap, so we discard it as a baseline and
+              focus exclusively on architectural adaptations that operate directly on
+              stylized inputs. (Our
+              destylizer uses a Stable Diffusion 1.5 prior; a stronger generator could yield
+              more photo-like outputs, but those would be hallucinated detail rather than
+              recovered geometry, so the conclusion holds.)
             </p>
           </div>
 
@@ -243,13 +248,10 @@
                ./impressionism/ folder into ./static/images/telestyle/strength/. -->
           <div class="content has-text-justified" style="margin-top: 1.5rem;">
             <p>
-              The denoising strength sets how much the diffusion model may repaint the
-              image &mdash; and the sweep shows there is no good setting. Drag the slider: at
-              low strength the painterly style survives almost untouched (nothing is really
-              removed), and by the strength needed to erase the style the geometry has
-              dissolved into noise. No value both removes the style and preserves the
-              structure, which is why we discard destylization as a baseline rather than
-              tuning a strength.
+              Drag the slider to sweep the denoising strength. At low strength the painterly
+              style survives almost untouched (nothing is really removed); by the strength
+              needed to erase the style, the geometry has dissolved into noise. The heatmap
+              below measures this same tradeoff quantitatively.
             </p>
           </div>
           <div id="strength-sweep" style="max-width: 540px; margin: 0 auto;">
@@ -285,90 +287,63 @@
             })();
           </script>
 
-          <!-- VIZ 4: Per-style DINOv2 cosine similarity to the original photograph
-               (ControlNet destylization), averaged over 100+ scenes, as a grouped bar
-               chart. Stylized (green) vs Destylized (red); destylized is lower for every
-               style. -->
-          <div class="content" style="max-width: 620px; margin: 1rem auto 0;">
-            <!-- legend -->
-            <div style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1.25rem; font-size:0.9rem;">
-              <span><span style="display:inline-block;width:12px;height:12px;background:#23d160;border-radius:2px;margin-right:6px;vertical-align:middle;"></span>Stylized</span>
-              <span><span style="display:inline-block;width:12px;height:12px;background:#ff3860;border-radius:2px;margin-right:6px;vertical-align:middle;"></span>Destylized (ControlNet)</span>
-            </div>
-
-            <!-- Watercolour -->
-            <div style="margin-bottom: 1.1rem;">
-              <p style="font-weight:600; margin-bottom:0.3rem;">Watercolour</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:66%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.66</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:51%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.51</span>
-              </div>
-            </div>
-
-            <!-- Oil painting -->
-            <div style="margin-bottom: 1.1rem;">
-              <p style="font-weight:600; margin-bottom:0.3rem;">Oil painting</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:84%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.84</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:66%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.66</span>
-              </div>
-            </div>
-
-            <!-- Impressionism -->
-            <div style="margin-bottom: 1.1rem;">
-              <p style="font-weight:600; margin-bottom:0.3rem;">Impressionism</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:59%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.59</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:41%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.41</span>
-              </div>
-            </div>
-
-            <!-- Engraving -->
-            <div>
-              <p style="font-weight:600; margin-bottom:0.3rem;">Engraving</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:62%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.62</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:50%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.50</span>
-              </div>
-            </div>
+          <!-- VIZ 4: Joint strength x ControlNet-conditioning-scale sweep. DINOv2 cosine
+               similarity to the photo (higher = closer), mean over scene_0's 8 frames x 4
+               styles (32 matched samples/cell). Matched stylized baseline = 0.85 (top row);
+               EVERY cell falls below it. Best cell boxed (0.78, still -0.07). -->
+          <div class="content" style="max-width: 480px; margin: 1rem auto 0;">
+            <p class="has-text-centered" style="font-size:0.75rem; color:#888; margin-bottom:0.3rem; letter-spacing:0.04em;">conditioning scale &rarr;</p>
+            <table style="width:100%; border-collapse:collapse; text-align:center; font-variant-numeric:tabular-nums;">
+              <thead>
+              <tr>
+                <th style="padding:6px 10px; font-size:0.72rem; color:#888; text-align:right; font-weight:500;">strength &darr;</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">0.60</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">0.80</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">1.00</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">1.30</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555;">stylized</th>
+                <td colspan="4" style="padding:9px 0; background:rgb(56,190,110); color:#fff; border:1px solid #fff; font-weight:700;">0.85 &nbsp;<span style="font-weight:500; font-size:0.78rem;">(input baseline &mdash; same frames)</span></td>
+              </tr>
+              <tr><td colspan="5" style="padding:0; border-bottom:2px solid #555;"></td></tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.20</th>
+                <td style="padding:11px 0; background:rgb(101,193,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.77</td>
+                <td style="padding:11px 0; background:rgb(99,192,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.78</td>
+                <td style="padding:11px 0; background:rgb(98,192,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.78</td>
+                <td style="padding:11px 0; background:rgb(98,192,106); color:#2b2b2b; border:3px solid #1b1b1b; font-weight:700;">0.78</td>
+              </tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.35</th>
+                <td style="padding:11px 0; background:rgb(222,200,94); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.56</td>
+                <td style="padding:11px 0; background:rgb(207,199,96); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.59</td>
+                <td style="padding:11px 0; background:rgb(193,198,97); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.61</td>
+                <td style="padding:11px 0; background:rgb(183,197,98); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.63</td>
+              </tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.50</th>
+                <td style="padding:11px 0; background:rgb(237,135,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.33</td>
+                <td style="padding:11px 0; background:rgb(240,155,87); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.39</td>
+                <td style="padding:11px 0; background:rgb(243,173,89); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.44</td>
+                <td style="padding:11px 0; background:rgb(245,188,91); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.48</td>
+              </tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.65</th>
+                <td style="padding:11px 0; background:rgb(229,83,80); color:#fff; border:1px solid #fff; font-weight:500;">0.19</td>
+                <td style="padding:11px 0; background:rgb(233,108,83); color:#fff; border:1px solid #fff; font-weight:500;">0.26</td>
+                <td style="padding:11px 0; background:rgb(236,126,85); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.31</td>
+                <td style="padding:11px 0; background:rgb(238,142,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.35</td>
+              </tr>
+              </tbody>
+            </table>
           </div>
-          <p class="has-text-centered" style="max-width:620px; margin:0.9rem auto 0; font-size:0.9rem; color:#4a4a4a;">
-            <em>DINOv2 cosine similarity to the original photograph (higher = closer to the
-            real photograph), averaged over more than 100 scenes. For every style the
-            destylized output is less similar to the photograph than the stylized input it
-            was derived from.</em>
+          <p class="has-text-centered" style="max-width:540px; margin:0.8rem auto 3rem; font-size:0.85rem; color:#666;">
+            <em>Joint sweep of denoising strength (rows) and ControlNet conditioning scale
+            (columns): DINOv2 similarity to the photograph (scene_0, 8 frames &times; 4
+            styles). Every cell sits below the matched stylized baseline (0.85, top row).</em>
           </p>
           <!-- ===================================================================== -->
           <!-- Architecture Modifications                                             -->
