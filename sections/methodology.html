@@ -22,12 +22,13 @@
             <p>
               As shown in Fig.&nbsp;1, we generate stylized variants (Impressionism, Oil
               painting, Engraving, Watercolour) of BlendedMVS while preserving 3D geometry.
-              To do this we use <em>Telestyle</em> built on Qwen-Image-Edit. The model was
-              purpose-built for content-preserving style transfer. It takes a content and a
+              To do this we use <a href="https://tele-ai.github.io/TeleStyle/"><em>TeleStyle</em></a>,
+              a content-preserving style-transfer model built on Qwen-Image-Edit-2509. It takes a content and a
               style reference image as input, producing a stylised output that preserves
               structure and composition while adopting the target aesthetic. To fit in the
-              time and compute constraints, we only keep the scenes which have less than 150
-              views and stylize every fifth image. We then obtain a benchmark of 80 scenes
+              time and compute constraints, we stylize each frame in just four diffusion
+              steps via a Lightning distillation for speed, keep only scenes with fewer than 150
+              views, and stylize every fifth image. We then obtain a benchmark of 80 scenes
               which contain 15 views on average. All with the ground truth camera positions
               and depth maps. The dataset can be found in
               <a href="https://huggingface.co/datasets/sophiargh/StylizedBlendedMVS">this link</a>.
