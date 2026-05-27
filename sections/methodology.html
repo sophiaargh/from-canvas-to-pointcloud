@@ -4,11 +4,356 @@
       <div class="columns is-centered">
         <div class="column is-full-width">
           <h2 class="title is-3" id="method">III. Methodology</h2>
+
+          <!-- ===================================================================== -->
+          <!-- Data / Stylization pipeline (TeleStyle)                     -->
+          <!-- ===================================================================== -->
+          <h3 class="title is-4" id="method-data">Data</h3>
           <div class="content has-text-justified">
             <p>
-              The methodology part of the report can be provided here
+              We develop a benchmark of stylized multi-view images, since 3D reconstruction
+              datasets like <a href="https://github.com/YoYo000/BlendedMVS">BlendedMVS</a>
+              and <a href="https://roboimagedata.compute.dtu.dk/?page_id=36">DTU</a> provide
+              ground-truth geometry but lack artistic variance.
+            </p>
+
+
+
+            <p>
+              As shown in Fig.&nbsp;1, we generate stylized variants (Impressionism, Oil
+              painting, Engraving, Watercolour) of BlendedMVS while preserving 3D geometry.
+              To do this we use <em>Telestyle</em> built on Qwen-Image-Edit. The model was
+              purpose-built for content-preserving style transfer. It takes a content and a
+              style reference image as input, producing a stylised output that preserves
+              structure and composition while adopting the target aesthetic. To fit in the
+              time and compute constraints, we only keep the scenes which have less than 150
+              views and stylize every fifth image. We then obtain a benchmark of 80 scenes
+              which contain 15 views on average. All with the ground truth camera positions
+              and depth maps. The dataset can be found in
+              <a href="https://huggingface.co/datasets/sophiargh/StylizedBlendedMVS">this link</a>.
             </p>
           </div>
+
+          <!-- VIZ 1: Before / After stylization slider (moved here from the demo catalog) -->
+          <div id="stylize-ba-slider" class="ba-slider" role="slider" tabindex="0"
+               aria-label="Before and after stylization comparison"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <!-- "After" image is the base layer, fully visible on the right. -->
+            <img class="ba-img ba-after" src="./static/images/telestyle/impressionism_scene.png"
+                 alt="TeleStyle Impressionism rendering of the scene (after)." draggable="false"/>
+            <!-- "Before" image sits on top and is clipped to the handle position. -->
+            <img class="ba-img ba-before" src="./static/images/telestyle/original-scene.jpg"
+                 alt="Original photographic scene (before)." draggable="false"/>
+            <span class="ba-label ba-label-before">Original</span>
+            <span class="ba-label ba-label-after">Impressionism</span>
+            <div class="ba-handle" aria-hidden="true">
+              <div class="ba-handle-circle">
+                <span class="ba-arrow">&#10094;</span>
+                <span class="ba-arrow">&#10095;</span>
+              </div>
+            </div>
+          </div>
+          <script>
+            (function () {
+              const slider = document.getElementById('stylize-ba-slider');
+              if (!slider) return;
+              let dragging = false;
+
+              function setPct(pct) {
+                pct = Math.max(0, Math.min(100, pct));
+                slider.style.setProperty('--pos', pct + '%');
+                slider.setAttribute('aria-valuenow', Math.round(pct));
+              }
+              function setFromX(clientX) {
+                const rect = slider.getBoundingClientRect();
+                setPct(((clientX - rect.left) / rect.width) * 100);
+              }
+              function pointerX(e) {
+                return e.touches && e.touches.length ? e.touches[0].clientX : e.clientX;
+              }
+              function start(e) { dragging = true; setFromX(pointerX(e)); }
+              function move(e)  { if (dragging) setFromX(pointerX(e)); }
+              function end()    { dragging = false; }
+
+              slider.addEventListener('mousedown', start);
+              window.addEventListener('mousemove', move);
+              window.addEventListener('mouseup', end);
+              slider.addEventListener('touchstart', start, { passive: true });
+              slider.addEventListener('touchmove', move, { passive: true });
+              slider.addEventListener('touchend', end);
+
+              slider.addEventListener('keydown', function (e) {
+                const cur = parseFloat(slider.style.getPropertyValue('--pos')) || 50;
+                if (e.key === 'ArrowLeft')  { setPct(cur - 2); e.preventDefault(); }
+                if (e.key === 'ArrowRight') { setPct(cur + 2); e.preventDefault(); }
+              });
+
+              setPct(50);
+            })();
+          </script>
+
+          <!-- VIZ 2: Style reference (top of each card) paired with the resulting
+               stylized scene (bottom), for all four benchmark styles. -->
+          <div class="content has-text-justified" style="margin-top: 1.5rem;">
+            <p>
+              TeleStyle takes the photographic scene above as <em>content</em> and a
+              <em>style reference</em> image, then renders the scene in the reference's
+              aesthetic while preserving its geometry. Each card below pairs the style
+              reference (top) with the resulting render of the same scene (bottom).
+            </p>
+          </div>
+          <div class="columns is-centered is-multiline">
+            <!-- Impressionism -->
+            <div class="column is-one-quarter">
+              <div class="box" style="padding: 0.5rem;">
+                <p class="has-text-centered" style="font-size:0.7rem; color:#999; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:0.3rem;">Style reference</p>
+                <img src="./static/images/telestyle/reference_impressionism.jpeg"
+                     style="border-radius:5px; width:100%; height:90px; object-fit:cover;"
+                     alt="Impressionism style reference"/>
+                <p class="has-text-centered" style="color:#bbb; margin:0.15rem 0; line-height:1;">&#8595;</p>
+                <img src="./static/images/telestyle/impressionism_scene.png"
+                     style="border-radius:6px; width:100%; object-fit:cover; aspect-ratio:4/3;"
+                     alt="Impressionism stylization of the scene"/>
+                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Impressionism</strong></p>
+              </div>
+            </div>
+            <!-- Oil painting -->
+            <div class="column is-one-quarter">
+              <div class="box" style="padding: 0.5rem;">
+                <p class="has-text-centered" style="font-size:0.7rem; color:#999; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:0.3rem;">Style reference</p>
+                <img src="./static/images/telestyle/reference_oil_painting.jpg"
+                     style="border-radius:5px; width:100%; height:90px; object-fit:cover;"
+                     alt="Oil painting style reference"/>
+                <p class="has-text-centered" style="color:#bbb; margin:0.15rem 0; line-height:1;">&#8595;</p>
+                <img src="./static/images/telestyle/oil_painting_scene.jpeg"
+                     style="border-radius:6px; width:100%; object-fit:cover; aspect-ratio:4/3;"
+                     alt="Oil painting stylization of the scene"/>
+                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Oil painting</strong></p>
+              </div>
+            </div>
+            <!-- Engraving -->
+            <div class="column is-one-quarter">
+              <div class="box" style="padding: 0.5rem;">
+                <p class="has-text-centered" style="font-size:0.7rem; color:#999; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:0.3rem;">Style reference</p>
+                <img src="./static/images/telestyle/reference_engraving.jpeg"
+                     style="border-radius:5px; width:100%; height:90px; object-fit:cover;"
+                     alt="Engraving style reference"/>
+                <p class="has-text-centered" style="color:#bbb; margin:0.15rem 0; line-height:1;">&#8595;</p>
+                <img src="./static/images/telestyle/engraving_scene.jpeg"
+                     style="border-radius:6px; width:100%; object-fit:cover; aspect-ratio:4/3;"
+                     alt="Engraving stylization of the scene"/>
+                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Engraving</strong></p>
+              </div>
+            </div>
+            <!-- Watercolour -->
+            <div class="column is-one-quarter">
+              <div class="box" style="padding: 0.5rem;">
+                <p class="has-text-centered" style="font-size:0.7rem; color:#999; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:0.3rem;">Style reference</p>
+                <img src="./static/images/telestyle/reference_water_color.jpg"
+                     style="border-radius:5px; width:100%; height:90px; object-fit:cover;"
+                     alt="Watercolour style reference"/>
+                <p class="has-text-centered" style="color:#bbb; margin:0.15rem 0; line-height:1;">&#8595;</p>
+                <img src="./static/images/telestyle/watercolor_scene.jpeg"
+                     style="border-radius:6px; width:100%; object-fit:cover; aspect-ratio:4/3;"
+                     alt="Watercolour stylization of the scene"/>
+                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Watercolour</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================================== -->
+          <!-- Destylization                                               -->
+          <!-- ===================================================================== -->
+          <h3 class="title is-4" id="method-destyle">Destylization</h3>
+          <div class="content has-text-justified">
+            <p>
+              A natural candidate for an additional baseline is to first remove the artistic
+              style from each image before passing it to MapAnything&mdash;a
+              <em>destylization</em> pre-processing step&mdash;so as to recover an
+              approximation of the original photograph. Such a pipeline would test whether
+              the reconstruction gap introduced by stylization (Table&nbsp;1<!-- TODO(team): link to the baseline results Table in the Results section once it exists -->)
+              can be closed by style removal alone, without any architectural adaptation.
+            </p>
+            <p>
+              We explored two destylization strategies. The first,
+              <strong>Reverse TeleStyle</strong>, reuses the TeleStyle pipeline in the
+              reverse direction: the stylized image serves as the content input
+              (Figure&nbsp;1 in the model prompt) and the original photograph acts as the
+              photorealistic style reference (Figure&nbsp;2), instructing the model to
+              transfer the photographic style back onto the content. The second strategy,
+              <strong>ControlNet img2img</strong>, is motivated by the need to decouple
+              style removal from scene content. A plain img2img diffusion pipeline risks
+              hallucinating scene content, while conditioning on text alone provides no
+              structural anchor. We therefore extract a depth map from the stylized image
+              using a DPT estimator and use it as a geometric condition for a Stable
+              Diffusion 1.5 ControlNet img2img pipeline: the stylized image initializes the
+              diffusion process (preserving scene content) while the depth map constrains
+              the geometry, and a photorealistic prompt &mdash; paired with a negative
+              prompt penalising painterly and stylised textures &mdash; pushes the style
+              toward realism. We swept the denoising strength across a wide range
+              (0.10&ndash;0.70): at low strength the scene content is preserved but almost no
+              style is removed, while higher strengths remove the style only by hallucinating
+              away the geometry. No setting achieves both (see the slider below).
+            </p>
+            <p>
+              We quantify the fidelity of each destylized output using DINOv2 cosine
+              similarity to the original photograph as a proxy for semantic proximity,
+              averaged over more than 100 scenes. As shown in the chart below, ControlNet
+              img2img destylization <em>lowers</em> this similarity for every style: across
+              watercolour, oil painting, impressionism, and engraving, the destylized images
+              are consistently less similar to the source photograph than the stylized
+              inputs they were derived from. The drop is uniform &mdash; for example, oil
+              painting falls from 0.84 to 0.66 and impressionism from 0.59 to 0.41. Rather
+              than recovering the original photograph, destylization moves each image
+              further away from it.
+            </p>
+            <p>
+              Since destylization fails to bring the images closer to the photographic
+              domain &mdash; and in fact pushes them further away &mdash; it cannot serve as
+              a pre-processing step that closes the reconstruction gap. We consequently
+              discard destylization as a baseline and focus exclusively on architectural
+              adaptations that operate directly on stylized inputs.
+            </p>
+          </div>
+
+          <!-- VIZ 3b: Destylization strength sweep (ControlNet img2img), single
+               impressionism view. Self-contained slider; images copied from the gitignored
+               ./impressionism/ folder into ./static/images/telestyle/strength/. -->
+          <div class="content has-text-justified" style="margin-top: 1.5rem;">
+            <p>
+              The denoising strength sets how much the diffusion model may repaint the
+              image &mdash; and the sweep shows there is no good setting. Drag the slider: at
+              low strength the painterly style survives almost untouched (nothing is really
+              removed), and by the strength needed to erase the style the geometry has
+              dissolved into noise. No value both removes the style and preserves the
+              structure, which is why we discard destylization as a baseline rather than
+              tuning a strength.
+            </p>
+          </div>
+          <div id="strength-sweep" style="max-width: 540px; margin: 0 auto;">
+            <img id="strength-img" src="./static/images/telestyle/strength/s0.10.png"
+                 style="width:100%; border-radius:8px; display:block;" draggable="false"
+                 alt="ControlNet destylization at the selected denoising strength."/>
+            <p class="has-text-centered" style="margin:0.7rem 0 0.3rem; font-weight:600;">
+              Denoising strength: <span id="strength-val">0.10</span>
+            </p>
+            <input id="strength-range" class="slider is-fullwidth is-large is-info"
+                   type="range" min="0" max="8" step="1" value="0" style="margin:0;"/>
+            <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#999; margin-top:-0.25rem;">
+              <span>0.10 &middot; style kept</span>
+              <span>0.70 &middot; geometry lost</span>
+            </div>
+          </div>
+          <script>
+            (function () {
+              var steps = ["0.10","0.15","0.20","0.25","0.30","0.40","0.50","0.60","0.70"];
+              var base = "./static/images/telestyle/strength/s";
+              var range = document.getElementById('strength-range');
+              var img = document.getElementById('strength-img');
+              var val = document.getElementById('strength-val');
+              if (!range || !img) return;
+              steps.forEach(function (s) { var p = new Image(); p.src = base + s + ".png"; });
+              function update() {
+                var s = steps[parseInt(range.value, 10)];
+                img.src = base + s + ".png";
+                val.textContent = s;
+              }
+              range.addEventListener('input', update);
+              update();
+            })();
+          </script>
+
+          <!-- VIZ 4: Per-style DINOv2 cosine similarity to the original photograph
+               (ControlNet destylization), averaged over 100+ scenes, as a grouped bar
+               chart. Stylized (green) vs Destylized (red); destylized is lower for every
+               style. -->
+          <div class="content" style="max-width: 620px; margin: 1rem auto 0;">
+            <!-- legend -->
+            <div style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1.25rem; font-size:0.9rem;">
+              <span><span style="display:inline-block;width:12px;height:12px;background:#23d160;border-radius:2px;margin-right:6px;vertical-align:middle;"></span>Stylized</span>
+              <span><span style="display:inline-block;width:12px;height:12px;background:#ff3860;border-radius:2px;margin-right:6px;vertical-align:middle;"></span>Destylized (ControlNet)</span>
+            </div>
+
+            <!-- Watercolour -->
+            <div style="margin-bottom: 1.1rem;">
+              <p style="font-weight:600; margin-bottom:0.3rem;">Watercolour</p>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:66%; height:100%; background:#23d160;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.66</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:51%; height:100%; background:#ff3860;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.51</span>
+              </div>
+            </div>
+
+            <!-- Oil painting -->
+            <div style="margin-bottom: 1.1rem;">
+              <p style="font-weight:600; margin-bottom:0.3rem;">Oil painting</p>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:84%; height:100%; background:#23d160;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.84</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:66%; height:100%; background:#ff3860;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.66</span>
+              </div>
+            </div>
+
+            <!-- Impressionism -->
+            <div style="margin-bottom: 1.1rem;">
+              <p style="font-weight:600; margin-bottom:0.3rem;">Impressionism</p>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:59%; height:100%; background:#23d160;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.59</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:41%; height:100%; background:#ff3860;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.41</span>
+              </div>
+            </div>
+
+            <!-- Engraving -->
+            <div>
+              <p style="font-weight:600; margin-bottom:0.3rem;">Engraving</p>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:62%; height:100%; background:#23d160;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.62</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
+                  <div style="width:50%; height:100%; background:#ff3860;"></div>
+                </div>
+                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.50</span>
+              </div>
+            </div>
+          </div>
+          <p class="has-text-centered" style="max-width:620px; margin:0.9rem auto 0; font-size:0.9rem; color:#4a4a4a;">
+            <em>DINOv2 cosine similarity to the original photograph (higher = closer to the
+            real photograph), averaged over more than 100 scenes. For every style the
+            destylized output is less similar to the photograph than the stylized input it
+            was derived from.</em>
+          </p>
+
+          <!-- ===================================================================== -->
+          <!-- TODO(team): remaining Methodology subsections                         -->
+          <!--   - Evaluation pipeline (Sophia)                                      -->
+          <!--   - Architecture modifications: Normalization / AdaIN / LoRA          -->
+          <!-- ===================================================================== -->
         </div>
       </div>
       <!--/ Methodology. -->

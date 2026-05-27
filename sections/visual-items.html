@@ -50,69 +50,16 @@
         </div>
 
 <h3 class="title is-4">Before / After Slider</h3>
-       <!-- Drag the handle (or use the arrow keys) to wipe between the two images. -->
+       <!-- The working before/after slider now lives in the Methodology section
+            ("A Stylized Multi-View Benchmark with TeleStyle"), where it compares the
+            original scene against its Impressionism stylization. See
+            sections/methodology.html for the markup + script pattern. -->
         <div class="content has-text-justified">
           <p>
-            Drag the handle left and right to reveal the original scene underneath the
-            impressionism rendering. Click the slider and use the arrow keys for fine control.
+            See the live example in the Methodology section, which wipes between an
+            original scene and its TeleStyle stylization.
           </p>
         </div>
-        <div id="scene-ba-slider" class="ba-slider" role="slider" tabindex="0"
-             aria-label="Before and after image comparison"
-             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-          <!-- "After" image is the base layer, fully visible on the right. -->
-          <img class="ba-img ba-after" src="./static/images/telestyle/impressionism_scene.png"
-               alt="Impressionism rendering of the scene (after)." draggable="false"/>
-          <!-- "Before" image sits on top and is clipped to the handle position. -->
-          <img class="ba-img ba-before" src="./static/images/telestyle/original-scene.jpg"
-               alt="Original scene (before)." draggable="false"/>
-          <span class="ba-label ba-label-before">Before</span>
-          <span class="ba-label ba-label-after">After</span>
-          <div class="ba-handle" aria-hidden="true">
-            <div class="ba-handle-circle">
-              <span class="ba-arrow">&#10094;</span>
-              <span class="ba-arrow">&#10095;</span>
-            </div>
-          </div>
-        </div>
-        <script>
-          (function () {
-            const slider = document.getElementById('scene-ba-slider');
-            if (!slider) return;
-            let dragging = false;
-
-            function setPct(pct) {
-              pct = Math.max(0, Math.min(100, pct));
-              slider.style.setProperty('--pos', pct + '%');
-              slider.setAttribute('aria-valuenow', Math.round(pct));
-            }
-            function setFromX(clientX) {
-              const rect = slider.getBoundingClientRect();
-              setPct(((clientX - rect.left) / rect.width) * 100);
-            }
-            function pointerX(e) {
-              return e.touches && e.touches.length ? e.touches[0].clientX : e.clientX;
-            }
-            function start(e) { dragging = true; setFromX(pointerX(e)); }
-            function move(e)  { if (dragging) setFromX(pointerX(e)); }
-            function end()    { dragging = false; }
-
-            slider.addEventListener('mousedown', start);
-            window.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', end);
-            slider.addEventListener('touchstart', start, { passive: true });
-            slider.addEventListener('touchmove', move, { passive: true });
-            slider.addEventListener('touchend', end);
-
-            slider.addEventListener('keydown', function (e) {
-              const cur = parseFloat(slider.style.getPropertyValue('--pos')) || 50;
-              if (e.key === 'ArrowLeft')  { setPct(cur - 2); e.preventDefault(); }
-              if (e.key === 'ArrowRight') { setPct(cur + 2); e.preventDefault(); }
-            });
-
-            setPct(50);
-          })();
-        </script>
 
 <h3 class="title is-4">Double Column Media Display</h3>
     <div class="columns is-centered is-multiline">
