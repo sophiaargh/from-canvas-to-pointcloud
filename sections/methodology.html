@@ -359,11 +359,86 @@
             destylized output is less similar to the photograph than the stylized input it
             was derived from.</em>
           </p>
+          <!-- ===================================================================== -->
+          <!-- Architecture Modifications                                             -->
+          <!-- ===================================================================== -->
+          <h3 class="title is-4" id="method-arch">Architecture Modifications</h3>
+            <div class="columns is-centered is-vcentered" style="margin-bottom: 1.5rem;">
+              <div class="column is-half has-text-justified">
+                <p>
+                  The MapAnything architecture uses the first 24 layers of a DINOv2-L model as its dense
+                  image encoder, with the subsequent 16 layers repurposed to initialize the Alternating
+                  Attention (AA) blocks. During training, the encoder was fine-tuned end-to-end with a
+                  conservative learning rate of 5&times;10<sup>&minus;6</sup> (versus 10<sup>&minus;4</sup>
+                  for the AA blocks and task heads), enabling it to specialize in depth-centric and
+                  view-consistent features.
+                </p>
+                <p>
+                  We restrict all modifications exclusively to the DINOv2 encoder, keeping the downstream
+                  AA blocks and prediction heads frozen. Since DINOv2 was trained on natural photographs,
+                  stylized inputs induce severe out-of-distribution activations at this entry point;
+                  adapting the AA blocks would be counter-productive if the encoder fails to preserve the
+                  geometry-related signals required for multi-view matching.
+                </p>
+              </div>
+              <div class="column is-half">
+                <figure style="text-align: center;">
+                  <img src="./static/images/MapAnythingArchitecture.png"
+                      style="width: 100%; border-radius: 8px;"
+                      alt="MapAnything architecture: 24-layer DINOv2 encoder feeding into 12 Alternating Attention blocks." />
+                  <figcaption style="margin-top: 0.75rem; font-size: 0.9rem; color: #4a4a4a;">
+                    <em>MapAnything architecture: a 24-layer DINOv2 encoder feeds into 12 Alternating
+                    Attention (AA) blocks. Our modifications target exclusively the DINOv2 encoder.
+                    &ldquo;From front&rdquo; applies changes starting at layer&nbsp;0;
+                    &ldquo;from end&rdquo; starts at layer&nbsp;23.</em>
+                  </figcaption>
+                </figure>
+              </div>
+            </div>
+            <!-- Strategy 1: Feature-Space Normalization -->
+            <div class="box" style="margin-bottom: 1.25rem;">
+              <p><strong>Feature-Space Normalization</strong></p>
+              <p>
+                Instance Normalization is applied directly to intermediate feature tensors between
+                DINOv2 layers, standardizing activations to <em>&Nscr;(0,&nbsp;1)</em> to strip
+                style-specific texture statistics. This method is entirely training-free and serves
+                as a lightweight baseline.
+              </p>
+            </div>
+
+            <!-- Strategy 2: AdaIN -->
+            <div class="box" style="margin-bottom: 1.25rem;">
+              <p><strong>Adaptive Instance Normalization (AdaIN)</strong></p>
+              <p>
+                Learnable AdaIN affine layers are inserted between encoder layers and optimized via
+                cross-domain distillation. A frozen <em>teacher</em> model processes photographs while
+                a <em>student</em> (identical model with AdaIN layers) processes matched stylized
+                inputs, supervised by an L<sub>1</sub> loss on predicted depth maps
+                (<em>&Dopf;</em>) and 3D point clouds (<em>&Popf;</em>):
+              </p>
+              <div style="text-align: center; margin: 0.75rem 0; font-style: italic;">
+                &#x2112; = &alpha;&thinsp;&Vert;&thinsp;&Dopf;<sub>student</sub>(X<sub>style</sub>)
+                &minus; &Dopf;<sub>teacher</sub>(X<sub>photo</sub>)&thinsp;&Vert;<sub>1</sub>
+                &nbsp;+&nbsp;
+                &beta;&thinsp;&Vert;&thinsp;&Popf;<sub>student</sub>(X<sub>style</sub>)
+                &minus; &Popf;<sub>teacher</sub>(X<sub>photo</sub>)&thinsp;&Vert;<sub>1</sub>
+              </div>
+              <p>
+                By minimizing the discrepancy between the student&rsquo;s predictions on stylized
+                inputs and the teacher&rsquo;s predictions on photographs, the encoder is encouraged
+                to extract style-invariant geometric cues without altering downstream structural
+                reasoning.
+              </p>
+            </div>
+
+            <!-- Strategy 3: LoRA -->
+
+          </div>
 
           <!-- ===================================================================== -->
           <!-- TODO(team): remaining Methodology subsections                         -->
           <!--   - Evaluation pipeline (Sophia)                                      -->
-          <!--   - Architecture modifications: Normalization / AdaIN / LoRA          -->
+          <!--   - Architecture modifications: LoRA                                  -->
           <!-- ===================================================================== -->
         </div>
       </div>
