@@ -6,7 +6,7 @@
             <h2 class="title is-3" id="experiments">IV. Experiments</h2>
             <div class="content has-text-justified">
 
-              <h3 class="title is-5">Baseline evaluation</h3>
+              <h3 class="title is-4">Baseline evaluation</h3>
 
               <p>
                 We evaluate the unmodified MapAnything on our curated benchmark. Because ground-truth (GT) point clouds
@@ -33,7 +33,7 @@
                     <h5 class="subtitle has-text-centered">
                     <font size="-0.7">
                         <span style="font-weight:normal">
-                        ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the pointclouds are in a different scale and position.
+                        ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the point clouds are in a different scale and position.
                         </span>
                     </font>
                     </h5>
@@ -316,7 +316,7 @@
             </div>
 
             <h3 class="title is-4" id="results-grayscale">
-          4.1 Robustness to Historical Image Degradation: Grayscale and Film
+          Robustness to Historical Image Degradation: Grayscale and Film
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -338,7 +338,7 @@
             </li>
           </ul>
 
-          <h3 class="title is-4">Grayscale & Film Variants</h3>
+          <h4 class="title is-5">Grayscale & Film Variants</h4>
             <div class="content has-text-justified">
               <p>
                 Drag either handle to compare the original RGB, grayscale, and simulated film
@@ -535,7 +535,7 @@
 
         <!-- ─── 4.2 Feature-Space Normalization ──────────────────────────── -->
         <h3 class="title is-4" id="results-normalization">
-          4.2 Feature-Space Normalization Experiments
+          Feature-Space Normalization Experiments
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -588,7 +588,7 @@
 
         <!-- ─── 4.3 AdaIN ─────────────────────────────────────────────────── -->
         <h3 class="title is-4" id="results-adain">
-          4.3 Adaptive Instance Normalization (AdaIN)
+          Adaptive Instance Normalization (AdaIN)
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -659,7 +659,7 @@
 
         <!-- ─── 4.4 LoRA ─────────────────────────────────────────────────── -->
         <h3 class="title is-4" id="results-lora">
-          4.4 Low-Rank Adapters (LoRA)
+          Low-Rank Adapters (LoRA)
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -691,7 +691,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 680px; text-align:center;">
             <img src="./static/results/color-artifact.jpeg" alt="Color artifacts on the predictions" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              Color artifacts introduced by the stylized images when predicting the pointclouds using LoRA.
+              Color artifacts introduced by the stylized images when predicting the point clouds using LoRA.
             </figcaption>
           </figure>
 
@@ -729,7 +729,7 @@
             This trade-off is further corroborated by qualitative inspection. The depth map
             comparison (Figure&nbsp;<a href="#fig-depth-maps">4</a>) favors LoRA with
             consistency loss, which produces the cleanest per-pixel depth estimates with the
-            least edge and boundary artifacts. The qualitative point cloud comparison of the reconstruction of Notre Dame <a href="#fig-mini-benchmark">here</a> tells the opposite story: the
+            least edge and boundary artifacts. The qualitative point cloud comparison of the reconstruction of Notre-Dame <a href="#fig-mini-benchmark">here</a> tells the opposite story: the
             unmodified MapAnything struggles with stylized inputs, while plain LoRA yields the
             most visually coherent 3D reconstructions. Together, these observations highlight
             a fundamental tension — the consistency loss improves local, per-pixel depth

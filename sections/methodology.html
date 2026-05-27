@@ -21,10 +21,10 @@
 
             <p>
               As shown in the Figure below, we generate stylized variants (Impressionism, Oil
-              painting, Engraving, Watercolour) of BlendedMVS while preserving 3D geometry.
+              painting, Engraving, Watercolor) of BlendedMVS while preserving 3D geometry.
               To do this we use <a href="https://tele-ai.github.io/TeleStyle/"><em>TeleStyle</em></a>,
               a content-preserving style-transfer model built on Qwen-Image-Edit-2509. It takes a content and a
-              style reference image as input, producing a stylised output that preserves
+              style reference image as input, producing a stylized output that preserves
               structure and composition while adopting the target aesthetic. To fit in the
               time and compute constraints, we stylize each frame in just four diffusion
               steps via a Lightning distillation for speed, keep only scenes with fewer than 150
@@ -146,31 +146,31 @@
                 <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Engraving</strong></p>
               </div>
             </div>
-            <!-- Watercolour -->
+            <!-- Watercolor -->
             <div class="column is-one-quarter">
               <div class="box" style="padding: 0.5rem;">
                 <p class="has-text-centered" style="font-size:0.7rem; color:#999; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:0.3rem;">Style reference</p>
                 <img src="./static/images/telestyle/reference_water_color.jpg"
                      style="border-radius:5px; width:100%; height:90px; object-fit:cover;"
-                     alt="Watercolour style reference"/>
+                     alt="Watercolor style reference"/>
                 <p class="has-text-centered" style="color:#bbb; margin:0.15rem 0; line-height:1;">&#8595;</p>
                 <img src="./static/images/telestyle/watercolor_scene.jpeg"
                      style="border-radius:6px; width:100%; object-fit:cover; aspect-ratio:4/3;"
-                     alt="Watercolour stylization of the scene"/>
-                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Watercolour</strong></p>
+                     alt="Watercolor stylization of the scene"/>
+                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Watercolor</strong></p>
               </div>
             </div>
           </div>
-          <h4 class="title is-4" id="method-mini-benchmark">Mini-Benchmark of Real Artistic Images</h4>
+          <h4 class="title is-5" id="method-mini-benchmark">Mini-Benchmark of Real Artistic Images</h4>
           <p>
               Moreover, to assess model performance on our target use case, we collect images of 
               three well-known architectural landmarks: Notre-Dame de Paris, the Rialto 
-              Bridge in Venice, and the Doge's Palace. Each are represented across three 
+              Bridge in Venice, and the Doge's Palace. Each is represented across three 
               stylistic modalities: historical photographs, sketches, and paintings sourced 
               from public archives. This selection is motivated by a concrete real-world 
               scenario: recovering the 3D geometry of structures that have been transformed, 
               damaged, or lost over time, for which only heterogeneous artistic documentation 
-              remains. This creates a mini benchmark for qualitative evaluation, as ground truth pointclouds are not available.
+              remains. This creates a mini benchmark for qualitative evaluation, as ground truth point clouds are not available.
             </p>
           <!-- ===================================================================== -->
           <!-- Evaluation                                               -->
@@ -211,7 +211,7 @@
               Diffusion 1.5 ControlNet img2img pipeline: the stylized image initializes the
               diffusion process (preserving scene content) while the depth map constrains
               the geometry, and a photorealistic prompt &mdash; paired with a negative
-              prompt penalising painterly and stylised textures &mdash; pushes the style
+              prompt penalising painterly and stylized textures &mdash; pushes the style
               toward realism. The pipeline exposes two free parameters &mdash; the img2img denoising strength and the
               ControlNet conditioning scale &mdash; which we sweep jointly in our experiments.
             </p>
@@ -308,7 +308,7 @@
               </p>
               <p>
                 The model is fine-tuned on BlendedMVS scenes rendered across multiple artistic
-                styles (engraving, impressionism, oil painting, watercolour) using TeleStyle,
+                styles (engraving, impressionism, oil painting, watercolor) using TeleStyle,
                 with each training sample mixing styled and original views to encourage
                 style-invariant predictions. An optional consistency regularization term
                 additionally penalizes discrepancies between the model's 3D point predictions
