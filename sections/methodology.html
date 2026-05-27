@@ -176,7 +176,7 @@
           <!-- Evaluation                                               -->
           <!-- ===================================================================== -->
           
-          <h3 class="title is-4" id="method-destyle">Evaluation</h3>
+          <h3 class="title is-4" id="method-destyle" style="margin-top: 2rem;">Evaluation</h3>
           <div class="content has-text-justified">
             <p>
               Before any architecture adaptation, we evaluate the baselines. We create an evaluation pipeline which evaluates the performance of MapAnything on our benchmark. 
@@ -443,6 +443,40 @@
             </div>
 
             <!-- Strategy 3: LoRA -->
+            <div class="box" style="margin-bottom: 1.25rem;">
+              <p><strong>Low-Rank Adapters (LoRA)</strong></p>
+              <p>
+                Trainable low-rank adapter matrices are injected directly into the attention
+                projections of MapAnything's DINOv2 backbone. Each targeted weight matrix
+                <em>W</em> &isin; <strong>R</strong><sup><em>d</em>&times;<em>k</em></sup>
+                is augmented with a factored residual update
+                &Delta;<em>W</em> = <em>BA</em>, where
+                <em>B</em> &isin; <strong>R</strong><sup><em>d</em>&times;<em>r</em></sup>,
+                <em>A</em> &isin; <strong>R</strong><sup><em>r</em>&times;<em>k</em></sup>,
+                and <em>r</em> &ll; min(<em>d</em>,&thinsp;<em>k</em>).
+                During the forward pass the layer computes
+                <em>y</em> = <em>Wx</em> + <em>BAx</em>: the frozen base projection and the
+                low-rank correction are summed, so the adapter learns only the residual shift
+                needed to handle stylized inputs. All base weights remain frozen during
+                training; only the adapter parameters are updated.
+              </p>
+              <p>
+                The model is fine-tuned on BlendedMVS scenes rendered across multiple artistic
+                styles (engraving, impressionism, oil painting, watercolour) using TeleStyle,
+                with each training sample mixing styled and original views to encourage
+                style-invariant predictions. An optional consistency regularization term
+                additionally penalizes discrepancies between the model's 3D point predictions
+                on styled versus original images:
+              </p>
+              <div style="text-align: center; margin: 0.75rem 0;">
+                \[\mathcal{L}_{\text{consistency}} = \frac{1}{V}\sum_{i=1}^{V} \left\| P_i^{\text{styled}} - \text{sg}(P_i^{\text{original}}) \right\|_2^2\]
+              </div>
+              <p>
+                where sg(&middot;) denotes the stop-gradient operator. This allows the adapter
+                to learn style robustness directly from the domain shift observed at training
+                time, while keeping the parameter overhead minimal.
+              </p>
+            </div>
 
           </div>
 

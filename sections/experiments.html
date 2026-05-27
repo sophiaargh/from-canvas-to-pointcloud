@@ -516,9 +516,187 @@
             within the attention projections themselves rather than on feature statistics.
           </p>
           <!--------------------------------->
+        </div>
 
+        <hr style="margin: 2.5rem 0;">
 
-            <h3 class="title is-4">Reconstruction from painting and sketches of Notre Dame the Paris</h3>
+        <!-- ─── 4.4 LoRA ─────────────────────────────────────────────────── -->
+        <h3 class="title is-4" id="results-lora">
+          4.4 Low-Rank Adapters (LoRA)
+        </h3>
+        <div class="content has-text-justified">
+          <p>
+            To evaluate whether parameter-efficient fine-tuning can teach MapAnything to be
+            robust to artistic stylization, we trained LoRA adapters on a mixed-style dataset
+            and evaluated across multiple configurations.
+          </p>
+
+          <p><strong>Implementation Details.</strong>
+            LoRA adapters of rank <em>r</em>&nbsp;=&nbsp;8 were injected into all attention
+            projections (query, key, value, and output) of MapAnything's DINOv2 encoder,
+            leaving all base weights frozen. An initial experiment trained with 2 views per
+            sample (1 original photograph and 1 styled counterpart), but this configuration
+            yielded a performance drop on 3 out of the 4 target metrics, likely due to
+            insufficient style diversity per batch. We therefore downscaled the input image
+            resolution to accommodate 4 views per training sample (2 original and 2 styled),
+            providing a richer and more balanced mix of domains within each optimization step.
+          </p>
+          <p>
+            A key preprocessing decision was to convert all input images to grayscale before
+            feeding them to the model. Since MapAnything directly assigns input pixel colors to
+            the reconstructed 3D points without processing them through the learned architecture,
+            stylized images would produce point clouds colored with artistic hues rather than
+            true scene appearance. Rather than introducing an additional color-correction
+            mechanism, we simply convert all inputs to grayscale, ensuring the reconstructed
+            geometry is visually interpretable regardless of the input style.
+          </p>
+
+          <p><strong>Evaluation Protocol.</strong>
+            We compare three models: the unmodified MapAnything baseline, LoRA without
+            consistency regularization, and LoRA with consistency regularization
+            (&lambda;&nbsp;=&nbsp;0.1). We evaluate them across three scenarios designed to
+            probe distinct aspects of generalization: (i)&nbsp;8 photographic views, to measure
+            retention of the model's original capabilities; (ii)&nbsp;8 impressionism-stylized
+            views, to measure adaptation to heavy stylization; and (iii)&nbsp;a mixed scenario
+            of 4 photographic and 4 stylized views drawn from different styles, to measure
+            robustness in the realistic case where style is partially unknown.
+          </p>
+
+          <p><strong>Results and Analysis.</strong>
+            The results (Table&nbsp;<a href="#tab-lora">3</a>) reveal a clear split between
+            depth estimation and point cloud quality. On depth metrics (AbsRel and RMSE),
+            LoRA with consistency loss delivers consistent improvements across all three
+            scenarios: it matches or outperforms the baseline on photographs, reduces AbsRel
+            from 0.154 to 0.128 on impressionism, and from 0.120 to 0.112 on the mixed
+            scenario. This suggests the adapter successfully learns to extract more reliable
+            geometric signals from stylized inputs. On photographs specifically, the
+            near-identical AbsRel (0.090 in both cases) confirms that fine-tuning on styled
+            data does not degrade the model's original depth estimation capability.
+          </p>
+          <p>
+            Point cloud metrics (F-score and Chamfer), however, tell a different story. The
+            unmodified baseline achieves the best F-score in all three scenarios, and LoRA
+            without consistency obtains the best Chamfer distance in the mixed case. Adding
+            the consistency loss further erodes point cloud quality, suggesting that while the
+            consistency objective effectively anchors per-pixel depth predictions, it does so
+            at the cost of global point cloud structure.
+          </p>
+          <p>
+            This trade-off is further corroborated by qualitative inspection. The depth map
+            comparison (Figure&nbsp;<a href="#fig-depth-maps">5</a>) favors LoRA with
+            consistency loss, which produces the cleanest per-pixel depth estimates with the
+            least edge and boundary artifacts. The point cloud comparison
+            (Figure&nbsp;<a href="#fig-mini-benchmark">6</a>) tells the opposite story: the
+            unmodified MapAnything struggles with stylized inputs, while plain LoRA yields the
+            most visually coherent 3D reconstructions. Together, these observations highlight
+            a fundamental tension — the consistency loss improves local, per-pixel depth
+            accuracy but fails to preserve the global spatial coherence required for
+            high-quality point cloud reconstruction.
+          </p>
+
+          <!-- LoRA results table -->
+          <h4 id="tab-lora" class="title is-6">Table 3: LoRA adapter evaluation across three scenarios. Mean metrics over 80 scenes.</h4>
+          <div class="table-container">
+            <table class="table is-fullwidth is-striped">
+              <thead>
+                <tr>
+                  <th>Model / Metric (mean)</th>
+                  <th>AbsRel ↓</th>
+                  <th>RMSE ↓</th>
+                  <th>F-score ↑</th>
+                  <th>Chamfer (m) ↓</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="is-selected"><td colspan="5"><em>Photographs</em></td></tr>
+                <tr>
+                  <td>&emsp;Baseline</td>
+                  <td><strong>0.090</strong></td>
+                  <td>2.755</td>
+                  <td><strong>0.095</strong></td>
+                  <td>3.503</td>
+                </tr>
+                <tr>
+                  <td>&emsp;LoRA</td>
+                  <td>0.102</td>
+                  <td>2.560</td>
+                  <td>0.083</td>
+                  <td><strong>3.456</strong></td>
+                </tr>
+                <tr>
+                  <td>&emsp;LoRA + Consistency</td>
+                  <td><strong>0.090</strong></td>
+                  <td><strong>2.443</strong></td>
+                  <td>0.078</td>
+                  <td>3.870</td>
+                </tr>
+                <tr class="is-selected"><td colspan="5"><em>Impressionism</em></td></tr>
+                <tr>
+                  <td>&emsp;Baseline</td>
+                  <td>0.154</td>
+                  <td>2.540</td>
+                  <td>0.080</td>
+                  <td>2.546</td>
+                </tr>
+                <tr>
+                  <td>&emsp;LoRA</td>
+                  <td>0.149</td>
+                  <td>2.482</td>
+                  <td><strong>0.086</strong></td>
+                  <td>3.629</td>
+                </tr>
+                <tr>
+                  <td>&emsp;LoRA + Consistency</td>
+                  <td><strong>0.128</strong></td>
+                  <td><strong>2.324</strong></td>
+                  <td>0.081</td>
+                  <td><strong>2.516</strong></td>
+                </tr>
+                <tr class="is-selected"><td colspan="5"><em>Mixed</em></td></tr>
+                <tr>
+                  <td>&emsp;Baseline</td>
+                  <td>0.120</td>
+                  <td>2.663</td>
+                  <td><strong>0.093</strong></td>
+                  <td>3.248</td>
+                </tr>
+                <tr>
+                  <td>&emsp;LoRA</td>
+                  <td>0.121</td>
+                  <td>2.503</td>
+                  <td>0.081</td>
+                  <td><strong>2.240</strong></td>
+                </tr>
+                <tr>
+                  <td>&emsp;LoRA + Consistency</td>
+                  <td><strong>0.112</strong></td>
+                  <td><strong>2.380</strong></td>
+                  <td>0.075</td>
+                  <td>2.596</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Depth maps figure -->
+          <figure id="fig-depth-maps" class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
+            <img src="./static/images/lora/depth_maps.png"
+                 alt="Qualitative comparison of predicted depth maps across the three models"
+                 style="width:100%; border-radius:4px;">
+            <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
+              <strong>Figure 5.</strong> Qualitative comparison of predicted depth maps across
+              the three models. The unmodified MapAnything baseline exhibits visible artifacts
+              at object boundaries and edges. LoRA without consistency loss partially alleviates
+              this, while LoRA with consistency loss produces the cleanest depth estimates, with
+              notably reduced edge and border artifacts.
+            </figcaption>
+          </figure>
+        </div>
+
+        <hr style="margin: 2.5rem 0;">
+
+        <!-- ─── Mini benchmark qualitative ───────────────────────────────── -->
+        <h3 id="fig-mini-benchmark" class="title is-4">Reconstruction from painting and sketches of Notre Dame the Paris</h3>
             <p>
             For a final qualitative evaluation, we apply our models on a sample of our mini benchmark of paintings. 
             </p>
