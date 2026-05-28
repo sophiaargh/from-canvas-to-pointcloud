@@ -16,7 +16,7 @@ https://sophiaargh.github.io/from-canvas-to-pointcloud/
 
 ---
 
-This repository contains the source code for the project website of **From Canvas to Point Cloud**, developed for the EPFL course **CS503 — Visual Intelligence: Machines and Minds**.
+This repository contains the source code for the project website of **From Canvas to Point Cloud: 3D reconstruction from artistic imagery**, developed for the EPFL course **CS503 — Visual Intelligence: Machines and Minds**.
 
 The website is deployed using **GitHub Pages**.
 
