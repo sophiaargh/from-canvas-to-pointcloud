@@ -709,28 +709,31 @@
           <p><strong>Results and Analysis.</strong>
             The results (Table&nbsp;<a href="#tab-lora">3</a>) reveal a clear split between
             depth estimation and point cloud quality. On depth metrics (AbsRel and RMSE),
-            LoRA with consistency loss delivers consistent improvements across all three
-            scenarios: it matches or outperforms the baseline on photographs, reduces AbsRel
-            from 0.154 to 0.128 on impressionism, and from 0.120 to 0.112 on the mixed
-            scenario. This suggests the adapter successfully learns to extract more reliable
-            geometric signals from stylized inputs. On photographs specifically, the
-            near-identical AbsRel (0.090 in both cases) confirms that fine-tuning on styled
-            data does not degrade the model's original depth estimation capability.
+            LoRA with consistency loss delivers the strongest depth improvements in most
+            scenarios: it achieves the best AbsRel on both photographs and the mixed
+            scenario, and reduces median AbsRel from 0.122 to 0.101 on impressionism, though
+            it comes at a slight cost to RMSE in the mixed case. This suggests the adapter
+            successfully learns to extract more reliable geometric signals from stylized
+            inputs. On photographs specifically, the near-identical median AbsRel (0.084
+            vs.&nbsp;0.080) confirms that fine-tuning on styled data does not degrade the
+            model's original depth estimation capability.
           </p>
           <p>
             Point cloud metrics (F-score and Chamfer), however, tell a different story. The
             unmodified baseline achieves the best F-score in all three scenarios, and LoRA
-            without consistency obtains the best Chamfer distance in the mixed case. Adding
-            the consistency loss further erodes point cloud quality, suggesting that while the
-            consistency objective effectively anchors per-pixel depth predictions, it does so
-            at the cost of global point cloud structure.
+            without consistency obtains the best Chamfer distance in the impressionism case.
+            Adding the consistency loss further erodes point cloud quality, suggesting that
+            while the consistency objective effectively anchors per-pixel depth predictions,
+            it does so at the cost of global point cloud structure.
           </p>
           <p>
-            This trade-off is further corroborated by qualitative inspection. The depth map
-            comparison (Figure&nbsp;<a href="#fig-depth-maps">4</a>) favors LoRA with
-            consistency loss, which produces the cleanest per-pixel depth estimates with the
-            least edge and boundary artifacts. The qualitative point cloud comparison of the reconstruction of Notre-Dame <a href="#fig-mini-benchmark">here</a> tells the opposite story: the
-            unmodified MapAnything struggles with stylized inputs, while plain LoRA yields the
+            This trade-off between depth accuracy and point cloud fidelity is further
+            corroborated by qualitative inspection. The depth map comparison
+            (Figure&nbsp;<a href="#fig-depth-maps">5</a>) favors LoRA with consistency loss,
+            which produces the cleanest per-pixel depth estimates with the least edge and
+            boundary artifacts. The point cloud comparison
+            (Figure&nbsp;<a href="#fig-mini-benchmark">6</a>) tells the opposite story: the
+            unmodified baseline struggles with stylized inputs, while plain LoRA yields the
             most visually coherent 3D reconstructions. Together, these observations highlight
             a fundamental tension — the consistency loss improves local, per-pixel depth
             accuracy but fails to preserve the global spatial coherence required for
@@ -738,12 +741,12 @@
           </p>
 
           <!-- LoRA results table -->
-          <h4 id="tab-lora" class="title is-6">Table 3: LoRA adapter evaluation across three scenarios. Mean metrics over 80 scenes.</h4>
+          <h4 id="tab-lora" class="title is-6">Table 3: LoRA adapter evaluation across three scenarios. Median metrics over 80 scenes.</h4>
           <div class="table-container">
             <table class="table is-fullwidth is-striped">
               <thead>
                 <tr>
-                  <th>Model / Metric (mean)</th>
+                  <th>Model / Metric (median)</th>
                   <th>AbsRel ↓</th>
                   <th>RMSE ↓</th>
                   <th>F-score ↑</th>
@@ -754,68 +757,68 @@
                 <tr class="is-selected"><td colspan="5"><em>Photographs</em></td></tr>
                 <tr>
                   <td>&emsp;Baseline</td>
-                  <td><strong>0.090</strong></td>
-                  <td>2.755</td>
-                  <td><strong>0.095</strong></td>
-                  <td>3.503</td>
+                  <td>0.084</td>
+                  <td>0.247</td>
+                  <td>0.046</td>
+                  <td>0.314</td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA</td>
-                  <td>0.102</td>
-                  <td>2.560</td>
-                  <td>0.083</td>
-                  <td><strong>3.456</strong></td>
+                  <td>0.093</td>
+                  <td>0.251</td>
+                  <td><strong>0.057</strong></td>
+                  <td><strong>0.308</strong></td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA + Consistency</td>
-                  <td><strong>0.090</strong></td>
-                  <td><strong>2.443</strong></td>
-                  <td>0.078</td>
-                  <td>3.870</td>
+                  <td><strong>0.080</strong></td>
+                  <td><strong>0.241</strong></td>
+                  <td>0.052</td>
+                  <td>0.310</td>
                 </tr>
                 <tr class="is-selected"><td colspan="5"><em>Impressionism</em></td></tr>
                 <tr>
                   <td>&emsp;Baseline</td>
-                  <td>0.154</td>
-                  <td>2.540</td>
-                  <td>0.080</td>
-                  <td>2.546</td>
+                  <td>0.122</td>
+                  <td>0.294</td>
+                  <td><strong>0.061</strong></td>
+                  <td>0.250</td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA</td>
-                  <td>0.149</td>
-                  <td>2.482</td>
-                  <td><strong>0.086</strong></td>
-                  <td>3.629</td>
+                  <td>0.124</td>
+                  <td>0.292</td>
+                  <td><strong>0.061</strong></td>
+                  <td><strong>0.247</strong></td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA + Consistency</td>
-                  <td><strong>0.128</strong></td>
-                  <td><strong>2.324</strong></td>
-                  <td>0.081</td>
-                  <td><strong>2.516</strong></td>
+                  <td><strong>0.101</strong></td>
+                  <td><strong>0.263</strong></td>
+                  <td>0.058</td>
+                  <td>0.279</td>
                 </tr>
                 <tr class="is-selected"><td colspan="5"><em>Mixed</em></td></tr>
                 <tr>
                   <td>&emsp;Baseline</td>
-                  <td>0.120</td>
-                  <td>2.663</td>
-                  <td><strong>0.093</strong></td>
-                  <td>3.248</td>
+                  <td>0.102</td>
+                  <td>0.270</td>
+                  <td><strong>0.060</strong></td>
+                  <td><strong>0.264</strong></td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA</td>
-                  <td>0.121</td>
-                  <td>2.503</td>
-                  <td>0.081</td>
-                  <td><strong>2.240</strong></td>
+                  <td>0.111</td>
+                  <td><strong>0.266</strong></td>
+                  <td><strong>0.060</strong></td>
+                  <td>2.280</td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA + Consistency</td>
-                  <td><strong>0.112</strong></td>
-                  <td><strong>2.380</strong></td>
-                  <td>0.075</td>
-                  <td>2.596</td>
+                  <td><strong>0.098</strong></td>
+                  <td>0.276</td>
+                  <td>0.056</td>
+                  <td>0.267</td>
                 </tr>
               </tbody>
             </table>
