@@ -11,7 +11,7 @@
             Feed-forward 3D reconstruction models such as MapAnything are highly sensitive to artistic style variation, limiting reconstruction from paintings, sketches, and engravings. 
           </p>
           <p>
-            We introduce a stylized multi-view benchmark derived from BlendedMVS using diffusion-based style transfer while preserving ground-truth geometry and camera poses. We evaluate several adaptation strategies for improving robustness under artistic domain shift, including feature-space normalization, AdaIN, and LoRA-based fine-tuning of the DINOv2 encoder
+            We introduce a stylized multi-view benchmark derived from BlendedMVS using diffusion-based style transfer while preserving ground-truth geometry and camera poses. We evaluate several adaptation strategies for improving robustness under artistic domain shift, including feature-space normalization, AdaIN, and LoRA-based fine-tuning of the DINOv2 encoder.
           </p>
           <p>
             While normalization-based methods consistently degrade performance, LoRA improves depth estimation on stylized inputs, reducing AbsRel from 0.154 to 0.128 on impressionist scenes while preserving performance on photographs. However, these gains do not fully translate to improved point cloud quality, highlighting the difficulty of achieving style-invariant geometric reasoning.
