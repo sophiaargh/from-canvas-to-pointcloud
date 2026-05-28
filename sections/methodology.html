@@ -225,8 +225,8 @@
               style removal from scene content. A plain img2img diffusion pipeline risks
               hallucinating scene content, while conditioning on text alone provides no
               structural anchor. We therefore extract a depth map from the stylized image
-              using a DPT estimator&nbsp;<a href="#ref21">[21]</a> and use it as a geometric condition for a Stable
-              Diffusion 1.5&nbsp;<a href="#ref22">[22]</a> ControlNet&nbsp;<a href="#ref20">[20]</a> img2img pipeline: the stylized image initializes the
+              using a DPT estimator&nbsp;<a href="#ref20">[20]</a> and use it as a geometric condition for a Stable
+              Diffusion 1.5&nbsp;<a href="#ref21">[21]</a> ControlNet&nbsp;<a href="#ref22">[22]</a> img2img pipeline: the stylized image initializes the
               diffusion process (preserving scene content) while the depth map constrains
               the geometry, and a photorealistic prompt &mdash; paired with a negative
               prompt penalising painterly and stylized textures &mdash; pushes the style
