@@ -8,7 +8,7 @@
           <!-- ===================================================================== -->
           <!-- Data / Stylization pipeline (TeleStyle)                     -->
           <!-- ===================================================================== -->
-          <h3 class="title is-4" id="method-data">Data</h3>
+          <h3 class="title is-4" id="method-data">A Stylized Multi-View Benchmark</h3>
           <div class="content has-text-justified">
             <p>
               We develop a benchmark of stylized multi-view images, since 3D reconstruction
@@ -20,11 +20,11 @@
 
 
             <p>
-              As shown in Fig.&nbsp;1, we generate stylized variants (Impressionism, Oil
-              painting, Engraving, Watercolour) of BlendedMVS while preserving 3D geometry.
-              To do this we use <a href="https://tele-ai.github.io/TeleStyle/"><em>TeleStyle</em></a>,
-              a content-preserving style-transfer model built on Qwen-Image-Edit-2509. It takes a content and a
-              style reference image as input, producing a stylised output that preserves
+              As shown in the Figure below, we generate stylized variants (Impressionism, Oil
+              painting, Engraving, Watercolor) of BlendedMVS while preserving 3D geometry.
+              To do this we use <a href="https://tele-ai.github.io/TeleStyle/"><em>TeleStyle</em></a>&nbsp;<a href="#ref18">[18]</a>,
+              a content-preserving style-transfer model built on Qwen-Image-Edit-2509&nbsp;<a href="#ref19">[19]</a>. It takes a content and a
+              style reference image as input, producing a stylized output that preserves
               structure and composition while adopting the target aesthetic. To fit in the
               time and compute constraints, we stylize each frame in just four diffusion
               steps via a Lightning distillation for speed, keep only scenes with fewer than 150
@@ -146,54 +146,72 @@
                 <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Engraving</strong></p>
               </div>
             </div>
-            <!-- Watercolour -->
+            <!-- Watercolor -->
             <div class="column is-one-quarter">
               <div class="box" style="padding: 0.5rem;">
                 <p class="has-text-centered" style="font-size:0.7rem; color:#999; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:0.3rem;">Style reference</p>
                 <img src="./static/images/telestyle/reference_water_color.jpg"
                      style="border-radius:5px; width:100%; height:90px; object-fit:cover;"
-                     alt="Watercolour style reference"/>
+                     alt="Watercolor style reference"/>
                 <p class="has-text-centered" style="color:#bbb; margin:0.15rem 0; line-height:1;">&#8595;</p>
                 <img src="./static/images/telestyle/watercolor_scene.jpeg"
                      style="border-radius:6px; width:100%; object-fit:cover; aspect-ratio:4/3;"
-                     alt="Watercolour stylization of the scene"/>
-                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Watercolour</strong></p>
+                     alt="Watercolor stylization of the scene"/>
+                <p class="has-text-centered" style="margin-top:0.4rem;"><strong>Watercolor</strong></p>
               </div>
             </div>
           </div>
-          <h4 class="title is-4" id="method-destyle">Qualitative benchmark</h4>
+          <h4 class="title is-5" id="method-mini-benchmark">Mini-Benchmark of Real Artistic Images</h4>
           <p>
               Moreover, to assess model performance on our target use case, we collect images of 
               three well-known architectural landmarks: Notre-Dame de Paris, the Rialto 
-              Bridge in Venice, and the Doge's Palace. Each are represented across three 
+              Bridge in Venice, and the Doge's Palace. Each is represented across three 
               stylistic modalities: historical photographs, sketches, and paintings sourced 
               from public archives. This selection is motivated by a concrete real-world 
               scenario: recovering the 3D geometry of structures that have been transformed, 
               damaged, or lost over time, for which only heterogeneous artistic documentation 
-              remains. This creates a mini benchmark for qualitative evaluation, as GT pointclouds are not available.
+              remains. This creates a mini benchmark for qualitative evaluation, as ground truth point clouds are not available.
             </p>
           <!-- ===================================================================== -->
           <!-- Evaluation                                               -->
           <!-- ===================================================================== -->
           
-          <h3 class="title is-4" id="method-destyle" style="margin-top: 2rem;">Evaluation</h3>
+          <h3 class="title is-4" id="method-eval" style="margin-top: 2rem;">Evaluation</h3>
           <div class="content has-text-justified">
             <p>
-              Before any architecture adaptation, we evaluate the baselines. We create an evaluation pipeline which evaluates the performance of MapAnything on our benchmark. 
-              To fit into memory, we feed a maximum of 8 views per scene. This does not hinder performance as our primary goal is style robustness and not scene coverage.  
+              Our baseline is the unmodified <strong>MapAnything</strong>, the
+              state-of-the-art feed-forward reconstruction model we build on. Photographic
+              inputs act as the in-distribution reference and each artistic style as an
+              out-of-distribution test, so the photograph-versus-style gap directly measures
+              the cost of style shift. Before any architecture adaptation, we evaluate this
+              baseline on our benchmark; to fit into memory we feed at most 8 views per scene,
+              which does not hinder the analysis since our goal is style robustness rather than
+              scene coverage.
+            </p>
+            <p>
+              We report four metrics. <strong>Depth</strong> quality is measured by
+              <strong>AbsRel</strong> (mean absolute relative depth error,
+              |<em>d</em><sub>pred</sub> &minus; <em>d</em><sub>gt</sub>|&thinsp;/&thinsp;<em>d</em><sub>gt</sub>
+              over valid pixels) and <strong>RMSE</strong> (root-mean-square depth error).
+              <strong>Geometry</strong> quality is measured by the <strong>Chamfer distance</strong>
+              (symmetric mean nearest-neighbour distance between the predicted and ground-truth
+              point clouds, in metres) and the <strong>F-score</strong> (harmonic mean of
+              precision and recall, counting points within a threshold of
+              &tau;&nbsp;=&nbsp;2%&nbsp;of the scene scale). Lower is better for AbsRel, RMSE
+              and Chamfer; higher is better for the F-score.
             </p>
           </div>
           <!-- ===================================================================== -->
           <!-- Destylization                                               -->
           <!-- ===================================================================== -->
-          <h3 class="title is-4" id="method-destyle">Destylization</h3>
+          <h3 class="title is-4" id="method-destylization">Destylization</h3>
           <div class="content has-text-justified">
             <p>
               A natural candidate for an additional baseline is to first remove the artistic
               style from each image before passing it to MapAnything&mdash;a
               <em>destylization</em> pre-processing step&mdash;so as to recover an
               approximation of the original photograph. Such a pipeline would test whether
-              the reconstruction gap introduced by stylization (Table&nbsp;1<!-- TODO(team): link to the baseline results Table in the Results section once it exists -->)
+              the reconstruction gap introduced by stylization (Table <a href="#tab-baseline">1</a>)
               can be closed by style removal alone, without any architectural adaptation.
             </p>
             <p>
@@ -207,169 +225,15 @@
               style removal from scene content. A plain img2img diffusion pipeline risks
               hallucinating scene content, while conditioning on text alone provides no
               structural anchor. We therefore extract a depth map from the stylized image
-              using a DPT estimator and use it as a geometric condition for a Stable
-              Diffusion 1.5 ControlNet img2img pipeline: the stylized image initializes the
+              using a DPT estimator&nbsp;<a href="#ref20">[20]</a> and use it as a geometric condition for a Stable
+              Diffusion 1.5&nbsp;<a href="#ref21">[21]</a> ControlNet&nbsp;<a href="#ref22">[22]</a> img2img pipeline: the stylized image initializes the
               diffusion process (preserving scene content) while the depth map constrains
               the geometry, and a photorealistic prompt &mdash; paired with a negative
-              prompt penalising painterly and stylised textures &mdash; pushes the style
-              toward realism. We swept the denoising strength across a wide range
-              (0.10&ndash;0.70): at low strength the scene content is preserved but almost no
-              style is removed, while higher strengths remove the style only by hallucinating
-              away the geometry. No setting achieves both (see the slider below).
-            </p>
-            <p>
-              We quantify the fidelity of each destylized output using DINOv2 cosine
-              similarity to the original photograph as a proxy for semantic proximity,
-              averaged over more than 100 scenes. As shown in the chart below, ControlNet
-              img2img destylization <em>lowers</em> this similarity for every style: across
-              watercolour, oil painting, impressionism, and engraving, the destylized images
-              are consistently less similar to the source photograph than the stylized
-              inputs they were derived from. The drop is uniform &mdash; for example, oil
-              painting falls from 0.84 to 0.66 and impressionism from 0.59 to 0.41. Rather
-              than recovering the original photograph, destylization moves each image
-              further away from it.
-            </p>
-            <p>
-              Since destylization fails to bring the images closer to the photographic
-              domain &mdash; and in fact pushes them further away &mdash; it cannot serve as
-              a pre-processing step that closes the reconstruction gap. We consequently
-              discard destylization as a baseline and focus exclusively on architectural
-              adaptations that operate directly on stylized inputs.
+              prompt penalising painterly and stylized textures &mdash; pushes the style
+              toward realism. The pipeline exposes two free parameters &mdash; the img2img denoising strength and the
+              ControlNet conditioning scale &mdash; which we sweep jointly in our experiments.
             </p>
           </div>
-
-          <!-- VIZ 3b: Destylization strength sweep (ControlNet img2img), single
-               impressionism view. Self-contained slider; images copied from the gitignored
-               ./impressionism/ folder into ./static/images/telestyle/strength/. -->
-          <div class="content has-text-justified" style="margin-top: 1.5rem;">
-            <p>
-              The denoising strength sets how much the diffusion model may repaint the
-              image &mdash; and the sweep shows there is no good setting. Drag the slider: at
-              low strength the painterly style survives almost untouched (nothing is really
-              removed), and by the strength needed to erase the style the geometry has
-              dissolved into noise. No value both removes the style and preserves the
-              structure, which is why we discard destylization as a baseline rather than
-              tuning a strength.
-            </p>
-          </div>
-          <div id="strength-sweep" style="max-width: 540px; margin: 0 auto;">
-            <img id="strength-img" src="./static/images/telestyle/strength/s0.10.png"
-                 style="width:100%; border-radius:8px; display:block;" draggable="false"
-                 alt="ControlNet destylization at the selected denoising strength."/>
-            <p class="has-text-centered" style="margin:0.7rem 0 0.3rem; font-weight:600;">
-              Denoising strength: <span id="strength-val">0.10</span>
-            </p>
-            <input id="strength-range" class="slider is-fullwidth is-large is-info"
-                   type="range" min="0" max="8" step="1" value="0" style="margin:0;"/>
-            <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#999; margin-top:-0.25rem;">
-              <span>0.10 &middot; style kept</span>
-              <span>0.70 &middot; geometry lost</span>
-            </div>
-          </div>
-          <script>
-            (function () {
-              var steps = ["0.10","0.15","0.20","0.25","0.30","0.40","0.50","0.60","0.70"];
-              var base = "./static/images/telestyle/strength/s";
-              var range = document.getElementById('strength-range');
-              var img = document.getElementById('strength-img');
-              var val = document.getElementById('strength-val');
-              if (!range || !img) return;
-              steps.forEach(function (s) { var p = new Image(); p.src = base + s + ".png"; });
-              function update() {
-                var s = steps[parseInt(range.value, 10)];
-                img.src = base + s + ".png";
-                val.textContent = s;
-              }
-              range.addEventListener('input', update);
-              update();
-            })();
-          </script>
-
-          <!-- VIZ 4: Per-style DINOv2 cosine similarity to the original photograph
-               (ControlNet destylization), averaged over 100+ scenes, as a grouped bar
-               chart. Stylized (green) vs Destylized (red); destylized is lower for every
-               style. -->
-          <div class="content" style="max-width: 620px; margin: 1rem auto 0;">
-            <!-- legend -->
-            <div style="display:flex; gap:1.5rem; justify-content:center; margin-bottom:1.25rem; font-size:0.9rem;">
-              <span><span style="display:inline-block;width:12px;height:12px;background:#23d160;border-radius:2px;margin-right:6px;vertical-align:middle;"></span>Stylized</span>
-              <span><span style="display:inline-block;width:12px;height:12px;background:#ff3860;border-radius:2px;margin-right:6px;vertical-align:middle;"></span>Destylized (ControlNet)</span>
-            </div>
-
-            <!-- Watercolour -->
-            <div style="margin-bottom: 1.1rem;">
-              <p style="font-weight:600; margin-bottom:0.3rem;">Watercolour</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:66%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.66</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:51%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.51</span>
-              </div>
-            </div>
-
-            <!-- Oil painting -->
-            <div style="margin-bottom: 1.1rem;">
-              <p style="font-weight:600; margin-bottom:0.3rem;">Oil painting</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:84%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.84</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:66%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.66</span>
-              </div>
-            </div>
-
-            <!-- Impressionism -->
-            <div style="margin-bottom: 1.1rem;">
-              <p style="font-weight:600; margin-bottom:0.3rem;">Impressionism</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:59%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.59</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:41%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.41</span>
-              </div>
-            </div>
-
-            <!-- Engraving -->
-            <div>
-              <p style="font-weight:600; margin-bottom:0.3rem;">Engraving</p>
-              <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:62%; height:100%; background:#23d160;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.62</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="flex:1; background:#e8e8e8; border-radius:5px; height:18px; overflow:hidden;">
-                  <div style="width:50%; height:100%; background:#ff3860;"></div>
-                </div>
-                <span style="width:2.6rem; text-align:right; font-variant-numeric:tabular-nums;">0.50</span>
-              </div>
-            </div>
-          </div>
-          <p class="has-text-centered" style="max-width:620px; margin:0.9rem auto 0; font-size:0.9rem; color:#4a4a4a;">
-            <em>DINOv2 cosine similarity to the original photograph (higher = closer to the
-            real photograph), averaged over more than 100 scenes. For every style the
-            destylized output is less similar to the photograph than the stylized input it
-            was derived from.</em>
-          </p>
           <!-- ===================================================================== -->
           <!-- Architecture Modifications                                             -->
           <!-- ===================================================================== -->
@@ -462,7 +326,7 @@
               </p>
               <p>
                 The model is fine-tuned on BlendedMVS scenes rendered across multiple artistic
-                styles (engraving, impressionism, oil painting, watercolour) using TeleStyle,
+                styles (engraving, impressionism, oil painting, watercolor) using TeleStyle,
                 with each training sample mixing styled and original views to encourage
                 style-invariant predictions. An optional consistency regularization term
                 additionally penalizes discrepancies between the model's 3D point predictions

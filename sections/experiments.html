@@ -6,7 +6,7 @@
             <h2 class="title is-3" id="experiments">IV. Experiments</h2>
             <div class="content has-text-justified">
 
-              <h3 class="title is-5">Baseline evaluation</h3>
+              <h3 class="title is-4">Baseline evaluation</h3>
 
               <p>
                 We evaluate the unmodified MapAnything on our curated benchmark. Because ground-truth (GT) point clouds
@@ -33,7 +33,7 @@
                     <h5 class="subtitle has-text-centered">
                     <font size="-0.7">
                         <span style="font-weight:normal">
-                        ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the pointclouds are in a different scale and position.
+                        ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the point clouds are in a different scale and position.
                         </span>
                     </font>
                     </h5>
@@ -140,13 +140,13 @@
                     </tr>
                     <tr>
                       <td>Engraving</td>
-                      <td>0.211</td>
+                      <td><strong>0.211</strong></td>
                       <td>43.97</td>
                     </tr>
                     <tr>
                       <td>Impressionism</td>
                       <td>0.141</td>
-                      <td>35.21</td>
+                      <td><strong>35.21</strong></td>
                     </tr>
                   </tbody>
                 </table>
@@ -169,6 +169,8 @@
               distributional shift between training and test images is a primary source of
               performance degradation.
               </p>
+              <p>The results further suggest that even a small proportion of photographic inputs helps stabilize reconstruction quality, 
+                leading to lower reconstruction error compared to fully stylized input sets.</p>
 
             <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
                 <img src="./static/results/stylized_ratio.png" alt="Stylization ratio results" style="width:100%; border-radius:4px;">
@@ -178,8 +180,143 @@
                 </figcaption>
             </figure>
             
+            <!-- ===================================================================== -->
+            <!-- Destylization (discarded baseline) — approach is in Method               -->
+            <!-- ===================================================================== -->
+            <h3 class="title is-4" id="exp-destyle">Destylization</h3>
+            <div class="content has-text-justified">
+              <p>
+                We test whether the <a href="#method-destylization">destylization</a> baseline
+                from the Method section &mdash; removing the artistic style before
+                reconstruction &mdash; can close the stylization gap. We quantify each
+                destylized output by its DINOv2 cosine similarity to the original photograph, a
+                proxy for semantic proximity. To probe the pipeline fully, we jointly swept its
+                two coupled knobs &mdash; the img2img denoising strength and the ControlNet
+                conditioning scale &mdash; and compared each combination against a matched
+                baseline: the stylized inputs on the same frames (heatmap below; scene_0, eight
+                frames across the four styles). <em>Every</em> combination falls below that
+                stylized baseline of 0.85. The best cell (strength 0.20, conditioning scale
+                1.30) reaches only 0.78 &mdash; still 0.07 below the untouched stylized input,
+                and it gets there only by barely altering the image. Pushing strength up to
+                actually remove the style collapses similarity (to 0.19 at strength 0.65), and
+                raising the conditioning scale recovers little.
+              </p>
+            </div>
+
+          <!-- VIZ 3b: Destylization strength sweep (ControlNet img2img), single
+               impressionism view. Self-contained slider; images in ./static/images/telestyle/strength/. -->
+          <div class="content has-text-justified" style="margin-top: 1.5rem;">
+            <p>
+              At low strength the painterly style survives almost untouched (nothing is really removed); by the strength
+              needed to erase the style, the geometry has dissolved into noise. The heatmap
+              below measures this same tradeoff quantitatively.
+            </p>
+          </div>
+          <div id="strength-sweep" style="max-width: 540px; margin: 0 auto;">
+            <img id="strength-img" src="./static/images/telestyle/strength/s0.10.png"
+                 style="width:100%; border-radius:8px; display:block;" draggable="false"
+                 alt="ControlNet destylization at the selected denoising strength."/>
+            <p class="has-text-centered" style="margin:0.7rem 0 0.3rem; font-weight:600;">
+              Denoising strength: <span id="strength-val">0.10</span>
+            </p>
+            <input id="strength-range" class="slider is-fullwidth is-large is-info"
+                   type="range" min="0" max="8" step="1" value="0" style="margin:0;"/>
+            <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#999; margin-top:-0.25rem;">
+              <span>0.10 &middot; style kept</span>
+              <span>0.70 &middot; geometry lost</span>
+            </div>
+          </div>
+          <script>
+            (function () {
+              var steps = ["0.10","0.15","0.20","0.25","0.30","0.40","0.50","0.60","0.70"];
+              var base = "./static/images/telestyle/strength/s";
+              var range = document.getElementById('strength-range');
+              var img = document.getElementById('strength-img');
+              var val = document.getElementById('strength-val');
+              if (!range || !img) return;
+              steps.forEach(function (s) { var p = new Image(); p.src = base + s + ".png"; });
+              function update() {
+                var s = steps[parseInt(range.value, 10)];
+                img.src = base + s + ".png";
+                val.textContent = s;
+              }
+              range.addEventListener('input', update);
+              update();
+            })();
+          </script>
+          <!-- VIZ 4: Joint strength x ControlNet-conditioning-scale sweep. DINOv2 cosine
+               similarity to the photo (higher = closer), mean over scene_0's 8 frames x 4
+               styles (32 matched samples/cell). Matched stylized baseline = 0.85 (top row);
+               EVERY cell falls below it. Best cell boxed (0.78, still -0.07). -->
+          <div class="content" style="max-width: 480px; margin: 1rem auto 0;">
+            <p class="has-text-centered" style="font-size:0.75rem; color:#888; margin-bottom:0.3rem; letter-spacing:0.04em;">conditioning scale &rarr;</p>
+            <table style="width:100%; border-collapse:collapse; text-align:center; font-variant-numeric:tabular-nums;">
+              <thead>
+              <tr>
+                <th style="padding:6px 10px; font-size:0.72rem; color:#888; text-align:right; font-weight:500;">strength &darr;</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">0.60</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">0.80</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">1.00</th>
+                <th style="padding:6px 0; font-size:0.8rem; color:#555; font-variant-numeric:tabular-nums;">1.30</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555;">stylized</th>
+                <td colspan="4" style="padding:9px 0; background:rgb(56,190,110); color:#fff; border:1px solid #fff; font-weight:700;">0.85 &nbsp;<span style="font-weight:500; font-size:0.78rem;">(input baseline &mdash; same frames)</span></td>
+              </tr>
+              <tr><td colspan="5" style="padding:0; border-bottom:2px solid #555;"></td></tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.20</th>
+                <td style="padding:11px 0; background:rgb(101,193,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.77</td>
+                <td style="padding:11px 0; background:rgb(99,192,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.78</td>
+                <td style="padding:11px 0; background:rgb(98,192,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.78</td>
+                <td style="padding:11px 0; background:rgb(98,192,106); color:#2b2b2b; border:3px solid #1b1b1b; font-weight:700;">0.78</td>
+              </tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.35</th>
+                <td style="padding:11px 0; background:rgb(222,200,94); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.56</td>
+                <td style="padding:11px 0; background:rgb(207,199,96); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.59</td>
+                <td style="padding:11px 0; background:rgb(193,198,97); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.61</td>
+                <td style="padding:11px 0; background:rgb(183,197,98); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.63</td>
+              </tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.50</th>
+                <td style="padding:11px 0; background:rgb(237,135,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.33</td>
+                <td style="padding:11px 0; background:rgb(240,155,87); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.39</td>
+                <td style="padding:11px 0; background:rgb(243,173,89); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.44</td>
+                <td style="padding:11px 0; background:rgb(245,188,91); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.48</td>
+              </tr>
+              <tr>
+                <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.65</th>
+                <td style="padding:11px 0; background:rgb(229,83,80); color:#fff; border:1px solid #fff; font-weight:500;">0.19</td>
+                <td style="padding:11px 0; background:rgb(233,108,83); color:#fff; border:1px solid #fff; font-weight:500;">0.26</td>
+                <td style="padding:11px 0; background:rgb(236,126,85); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.31</td>
+                <td style="padding:11px 0; background:rgb(238,142,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.35</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="has-text-centered" style="max-width:540px; margin:0.8rem auto 3rem; font-size:0.85rem; color:#666;">
+            <em>Joint sweep of denoising strength (rows) and ControlNet conditioning scale
+            (columns): DINOv2 similarity to the photograph (scene_0, 8 frames &times; 4
+            styles). Every cell sits below the matched stylized baseline (0.85, top row).</em>
+          </p>
+            <div class="content has-text-justified">
+              <p>
+                Destylization therefore not only fails to recover photographic similarity but
+                actively reduces it at every point on the grid: it cannot remove the artistic
+                style without moving the image further from the photograph. As a pre-processing
+                step it cannot close the reconstruction gap, so we discard it as a baseline and
+                focus exclusively on architectural adaptations that operate directly on
+                stylized inputs. (Our destylizer uses a Stable Diffusion 1.5 prior; a stronger
+                generator could yield more photo-like outputs, but those would be hallucinated
+                detail rather than recovered geometry, so the conclusion holds.)
+              </p>
+            </div>
+
             <h3 class="title is-4" id="results-grayscale">
-          4.1 Robustness to Historical Image Degradation: Grayscale and Film
+          Robustness to Historical Image Degradation: Grayscale and Film
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -201,7 +338,7 @@
             </li>
           </ul>
 
-          <h3 class="title is-4">Three-Way Image Comparison</h3>
+          <h4 class="title is-5">Grayscale & Film Variants</h4>
             <div class="content has-text-justified">
               <p>
                 Drag either handle to compare the original RGB, grayscale, and simulated film
@@ -374,7 +511,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
             <img src="./static/results/3im_1.png" alt="AbsRel across input variants" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 2.</strong> AbsRel across input variants (RGB, grayscale, simulated
+              <strong>Figure 1.</strong> AbsRel across input variants (RGB, grayscale, simulated
               film) for all styles. Overlapping error bars indicate no statistically significant
               difference.
             </figcaption>
@@ -398,7 +535,7 @@
 
         <!-- ─── 4.2 Feature-Space Normalization ──────────────────────────── -->
         <h3 class="title is-4" id="results-normalization">
-          4.2 Feature-Space Normalization Experiments
+          Feature-Space Normalization Experiments
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -420,7 +557,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
             <img src="./static/results/results_norm.png" alt="Normalization ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 3.</strong> AbsRel as a function of number of normalized layers and
+              <strong>Figure 2.</strong> AbsRel as a function of number of normalized layers and
               cascading direction, across all five styles. The dashed line marks the unmodified
               baseline.
             </figcaption>
@@ -451,7 +588,7 @@
 
         <!-- ─── 4.3 AdaIN ─────────────────────────────────────────────────── -->
         <h3 class="title is-4" id="results-adain">
-          4.3 Adaptive Instance Normalization (AdaIN)
+          Adaptive Instance Normalization (AdaIN)
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -497,7 +634,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
             <img src="./static/results/adaIn_results.png" alt="AdaIN ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 4.</strong> Performance under AdaIN configurations. End cascading
+              <strong>Figure 3.</strong> Performance under AdaIN configurations. End cascading
               preserves more geometric fidelity at low layer counts, but no configuration
               surpasses the unmodified baseline.
             </figcaption>
@@ -522,7 +659,7 @@
 
         <!-- ─── 4.4 LoRA ─────────────────────────────────────────────────── -->
         <h3 class="title is-4" id="results-lora">
-          4.4 Low-Rank Adapters (LoRA)
+          Low-Rank Adapters (LoRA)
         </h3>
         <div class="content has-text-justified">
           <p>
@@ -546,10 +683,17 @@
             feeding them to the model. Since MapAnything directly assigns input pixel colors to
             the reconstructed 3D points without processing them through the learned architecture,
             stylized images would produce point clouds colored with artistic hues rather than
-            true scene appearance. Rather than introducing an additional color-correction
+            true scene appearance, as seen in the Figure below. Rather than introducing an additional color-correction
             mechanism, we simply convert all inputs to grayscale, ensuring the reconstructed
             geometry is visually interpretable regardless of the input style.
           </p>
+
+          <figure class="image" style="margin: 2rem auto; max-width: 680px; text-align:center;">
+            <img src="./static/results/color-artifact.jpeg" alt="Color artifacts on the predictions" style="width:100%; border-radius:4px;">
+            <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
+              Color artifacts introduced by the stylized images when predicting the point clouds using LoRA.
+            </figcaption>
+          </figure>
 
           <p><strong>Evaluation Protocol.</strong>
             We compare three models: the unmodified MapAnything baseline, LoRA without
@@ -686,7 +830,7 @@
                  alt="Qualitative comparison of predicted depth maps across the three models"
                  style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 5.</strong> Qualitative comparison of predicted depth maps across
+              <strong>Figure 4.</strong> Qualitative comparison of predicted depth maps across
               the three models. The unmodified MapAnything baseline exhibits visible artifacts
               at object boundaries and edges. LoRA without consistency loss partially alleviates
               this, while LoRA with consistency loss produces the cleanest depth estimates, with
@@ -698,9 +842,13 @@
         <hr style="margin: 2.5rem 0;">
 
         <!-- ─── Mini benchmark qualitative ───────────────────────────────── -->
-        <h3 id="fig-mini-benchmark" class="title is-4">Reconstruction from painting and sketches of Notre Dame the Paris</h3>
+        <h3 id="fig-mini-benchmark" class="title is-4">Reconstruction from painting and sketches of Notre-Dame de Paris</h3>
             <p>
-            For a final qualitative evaluation, we apply our models on a sample of our mini benchmark of paintings. 
+            For a final qualitative evaluation, we apply our models on a sample of our mini benchmark composed of historical photographs, 
+            sketches, and paintings of Notre-Dame de Paris.
+            Since no ground-truth point clouds are available for the real historical and artistic sources,
+             the benchmark is intended for qualitative comparison only. 
+             The figure below illustrates the reconstruction outputs across models. 
             </p>
             <h4 class="subtitle has-text-centered" style="margin-bottom: 0.75rem;">
                 <strong>Input</strong>
@@ -764,6 +912,7 @@
                         Qualitative evaluation over our mini benchmark of real images. We see that the Unmodified MapAnything struggles with the reconstruction. The best reconstruction comes from the classic LoRA.
                         </span>
                     </font>
+            </h5>
             </div>
 
             <script>
