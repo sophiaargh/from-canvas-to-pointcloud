@@ -179,8 +179,26 @@
           <h3 class="title is-4" id="method-eval" style="margin-top: 2rem;">Evaluation</h3>
           <div class="content has-text-justified">
             <p>
-              Before any architecture adaptation, we evaluate the baselines. We create an evaluation pipeline which evaluates the performance of MapAnything on our benchmark. 
-              To fit into memory, we feed a maximum of 8 views per scene. This does not hinder performance as our primary goal is style robustness and not scene coverage.  
+              Our baseline is the unmodified <strong>MapAnything</strong>, the
+              state-of-the-art feed-forward reconstruction model we build on. Photographic
+              inputs act as the in-distribution reference and each artistic style as an
+              out-of-distribution test, so the photograph-versus-style gap directly measures
+              the cost of style shift. Before any architecture adaptation, we evaluate this
+              baseline on our benchmark; to fit into memory we feed at most 8 views per scene,
+              which does not hinder the analysis since our goal is style robustness rather than
+              scene coverage.
+            </p>
+            <p>
+              We report four metrics. <strong>Depth</strong> quality is measured by
+              <strong>AbsRel</strong> (mean absolute relative depth error,
+              |<em>d</em><sub>pred</sub> &minus; <em>d</em><sub>gt</sub>|&thinsp;/&thinsp;<em>d</em><sub>gt</sub>
+              over valid pixels) and <strong>RMSE</strong> (root-mean-square depth error).
+              <strong>Geometry</strong> quality is measured by the <strong>Chamfer distance</strong>
+              (symmetric mean nearest-neighbour distance between the predicted and ground-truth
+              point clouds, in metres) and the <strong>F-score</strong> (harmonic mean of
+              precision and recall, counting points within a threshold of
+              &tau;&nbsp;=&nbsp;2%&nbsp;of the scene scale). Lower is better for AbsRel, RMSE
+              and Chamfer; higher is better for the F-score.
             </p>
           </div>
           <!-- ===================================================================== -->
