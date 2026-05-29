@@ -186,20 +186,22 @@
             <h3 class="title is-4" id="exp-destyle">Destylization</h3>
             <div class="content has-text-justified">
               <p>
-                We test whether the <a href="#method-destylization">destylization</a> baseline
-                from the Method section &mdash; removing the artistic style before
-                reconstruction &mdash; can close the stylization gap. We quantify each
-                destylized output by its DINOv2 cosine similarity to the original photograph, a
-                proxy for semantic proximity. To probe the pipeline fully, we jointly swept its
-                two coupled knobs &mdash; the img2img denoising strength and the ControlNet
-                conditioning scale &mdash; and compared each combination against a matched
-                baseline: the stylized inputs on the same frames (heatmap below; scene_0, eight
-                frames across the four styles). <em>Every</em> combination falls below that
-                stylized baseline of 0.85. The best cell (strength 0.20, conditioning scale
-                1.30) reaches only 0.78 &mdash; still 0.07 below the untouched stylized input,
-                and it gets there only by barely altering the image. Pushing strength up to
-                actually remove the style collapses similarity (to 0.19 at strength 0.65), and
-                raising the conditioning scale recovers little.
+                We evaluate whether the <a href="#method-destylization">destylization</a>
+                baseline introduced in the <a href="#method">Method section</a> (removing the artistic style prior to
+                reconstruction) can close the stylization gap. Fidelity is
+                quantified as the DINOv2 cosine similarity between each destylized output and
+                the corresponding original photograph, a proxy for semantic proximity, reported
+                as the median over 10 scenes and 4 styles (88 matched samples per cell). To
+                characterise the pipeline across its operating range, we perform a joint sweep
+                over its two coupled parameters, the img2img denoising strength and the
+                ControlNet conditioning scale, comparing each configuration against a matched
+                baseline given by the stylized inputs on the same frames. Every configuration
+                falls below this stylized baseline of 0.78. The most favourable configuration
+                (strength 0.20, conditioning scale 1.30) attains a similarity of only 0.69,
+                0.09 below the untouched stylized input, and does so only because it leaves the
+                image largely unmodified. Increasing the denoising strength to suppress the
+                style further reduces similarity, reaching 0.12 at strength 0.65, while
+                increasing the conditioning scale yields only marginal recovery.
               </p>
             </div>
 
@@ -207,9 +209,10 @@
                impressionism view. Self-contained slider; images in ./static/images/telestyle/strength/. -->
           <div class="content has-text-justified" style="margin-top: 1.5rem;">
             <p>
-              At low strength the painterly style survives almost untouched (nothing is really removed); by the strength
-              needed to erase the style, the geometry has dissolved into noise. The heatmap
-              below measures this same tradeoff quantitatively.
+              The slider below illustrates this trade-off qualitatively: at low denoising
+              strength the painterly style is largely preserved and little is removed, whereas
+              at the strength required to suppress the style the underlying geometry is
+              substantially degraded.
             </p>
           </div>
           <div id="strength-sweep" style="max-width: 540px; margin: 0 auto;">
@@ -222,8 +225,8 @@
             <input id="strength-range" class="slider is-fullwidth is-large is-info"
                    type="range" min="0" max="8" step="1" value="0" style="margin:0;"/>
             <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#999; margin-top:-0.25rem;">
-              <span>0.10 &middot; style kept</span>
-              <span>0.70 &middot; geometry lost</span>
+              <span>0.10 &middot; style preserved</span>
+              <span>0.70 &middot; geometry degraded</span>
             </div>
           </div>
           <script>
@@ -245,9 +248,7 @@
             })();
           </script>
           <!-- VIZ 4: Joint strength x ControlNet-conditioning-scale sweep. DINOv2 cosine
-               similarity to the photo (higher = closer), mean over scene_0's 8 frames x 4
-               styles (32 matched samples/cell). Matched stylized baseline = 0.85 (top row);
-               EVERY cell falls below it. Best cell boxed (0.78, still -0.07). -->
+               similarity to the photo (higher = closer). -->
           <div class="content" style="max-width: 480px; margin: 1rem auto 0;">
             <p class="has-text-centered" style="font-size:0.75rem; color:#888; margin-bottom:0.3rem; letter-spacing:0.04em;">conditioning scale &rarr;</p>
             <table style="width:100%; border-collapse:collapse; text-align:center; font-variant-numeric:tabular-nums;">
@@ -263,55 +264,57 @@
               <tbody>
               <tr>
                 <th scope="row" style="padding:8px 10px; font-weight:600; color:#555;">stylized</th>
-                <td colspan="4" style="padding:9px 0; background:rgb(56,190,110); color:#fff; border:1px solid #fff; font-weight:700;">0.85 &nbsp;<span style="font-weight:500; font-size:0.78rem;">(input baseline &mdash; same frames)</span></td>
+                <td colspan="4" style="padding:9px 0; background:rgb(8,119,63); color:#fff; border:1px solid #fff; font-weight:700;">0.78 &nbsp;<span style="font-weight:500; font-size:0.78rem;">(input baseline, same frames)</span></td>
               </tr>
               <tr><td colspan="5" style="padding:0; border-bottom:2px solid #555;"></td></tr>
               <tr>
                 <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.20</th>
-                <td style="padding:11px 0; background:rgb(101,193,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.77</td>
-                <td style="padding:11px 0; background:rgb(99,192,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.78</td>
-                <td style="padding:11px 0; background:rgb(98,192,106); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.78</td>
-                <td style="padding:11px 0; background:rgb(98,192,106); color:#2b2b2b; border:3px solid #1b1b1b; font-weight:700;">0.78</td>
+                <td style="padding:11px 0; background:rgb(110,192,100); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.65</td>
+                <td style="padding:11px 0; background:rgb(101,188,99); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.66</td>
+                <td style="padding:11px 0; background:rgb(76,176,93); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.68</td>
+                <td style="padding:11px 0; background:rgb(69,173,91); color:#2b2b2b; border:3px solid #1b1b1b; font-weight:700;">0.69</td>
               </tr>
               <tr>
                 <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.35</th>
-                <td style="padding:11px 0; background:rgb(222,200,94); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.56</td>
-                <td style="padding:11px 0; background:rgb(207,199,96); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.59</td>
-                <td style="padding:11px 0; background:rgb(193,198,97); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.61</td>
-                <td style="padding:11px 0; background:rgb(183,197,98); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.63</td>
+                <td style="padding:11px 0; background:rgb(245,251,178); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.47</td>
+                <td style="padding:11px 0; background:rgb(213,237,137); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.53</td>
+                <td style="padding:11px 0; background:rgb(200,232,128); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.54</td>
+                <td style="padding:11px 0; background:rgb(186,225,119); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.56</td>
               </tr>
               <tr>
                 <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.50</th>
-                <td style="padding:11px 0; background:rgb(237,135,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.33</td>
-                <td style="padding:11px 0; background:rgb(240,155,87); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.39</td>
-                <td style="padding:11px 0; background:rgb(243,173,89); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.44</td>
-                <td style="padding:11px 0; background:rgb(245,188,91); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.48</td>
+                <td style="padding:11px 0; background:rgb(244,111,68); color:#fff; border:1px solid #fff; font-weight:500;">0.24</td>
+                <td style="padding:11px 0; background:rgb(250,150,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.28</td>
+                <td style="padding:11px 0; background:rgb(253,183,104); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.32</td>
+                <td style="padding:11px 0; background:rgb(254,225,140); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.38</td>
               </tr>
               <tr>
                 <th scope="row" style="padding:8px 10px; font-weight:600; color:#555; font-variant-numeric:tabular-nums;">0.65</th>
-                <td style="padding:11px 0; background:rgb(229,83,80); color:#fff; border:1px solid #fff; font-weight:500;">0.19</td>
-                <td style="padding:11px 0; background:rgb(233,108,83); color:#fff; border:1px solid #fff; font-weight:500;">0.26</td>
-                <td style="padding:11px 0; background:rgb(236,126,85); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.31</td>
-                <td style="padding:11px 0; background:rgb(238,142,86); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.35</td>
+                <td style="padding:11px 0; background:rgb(178,13,38); color:#fff; border:1px solid #fff; font-weight:500;">0.12</td>
+                <td style="padding:11px 0; background:rgb(230,80,54); color:#fff; border:1px solid #fff; font-weight:500;">0.21</td>
+                <td style="padding:11px 0; background:rgb(233,87,57); color:#fff; border:1px solid #fff; font-weight:500;">0.21</td>
+                <td style="padding:11px 0; background:rgb(245,116,70); color:#2b2b2b; border:1px solid #fff; font-weight:500;">0.25</td>
               </tr>
               </tbody>
             </table>
           </div>
           <p class="has-text-centered" style="max-width:540px; margin:0.8rem auto 3rem; font-size:0.85rem; color:#666;">
             <em>Joint sweep of denoising strength (rows) and ControlNet conditioning scale
-            (columns): DINOv2 similarity to the photograph (scene_0, 8 frames &times; 4
-            styles). Every cell sits below the matched stylized baseline (0.85, top row).</em>
+            (columns): median DINOv2 similarity to the photograph over 10 scenes &times; 4
+            styles (88 matched samples per cell). Every cell sits below the matched stylized
+            baseline (0.78, top row).</em>
           </p>
             <div class="content has-text-justified">
               <p>
-                Destylization therefore not only fails to recover photographic similarity but
-                actively reduces it at every point on the grid: it cannot remove the artistic
-                style without moving the image further from the photograph. As a pre-processing
-                step it cannot close the reconstruction gap, so we discard it as a baseline and
-                focus exclusively on architectural adaptations that operate directly on
-                stylized inputs. (Our destylizer uses a Stable Diffusion 1.5 prior; a stronger
-                generator could yield more photo-like outputs, but those would be hallucinated
-                detail rather than recovered geometry, so the conclusion holds.)
+                Destylization thus fails to recover photographic similarity and instead
+                reduces it across the entire grid: the artistic style cannot be removed without
+                displacing the image further from the photograph. As a pre-processing step it
+                does not close the reconstruction gap, and we therefore discard it as a baseline
+                and restrict the remaining analysis to architectural adaptations applied
+                directly to stylized inputs. We note that our destylizer relies on a Stable
+                Diffusion 1.5 prior; a stronger generator might yield more photorealistic
+                outputs, but such detail would be hallucinated rather than recovered, leaving
+                the conclusion unchanged.
               </p>
             </div>
 
