@@ -22,8 +22,9 @@
               Future work could explore larger-scale training, real historical artistic datasets, and stronger end-to-end adaptation strategies. 
               It would also be valuable to identify which inputs were most out-of-domain using distributional distance metrics such as Maximum Mean Discrepancy (MMD),
                which could help diagnose whether the DINOv2 encoder or the MapAnything reconstruction layers are most hostile to multi-style inputs. 
-               Finally, applying LoRA not only to the DINOv2 encoder but also to the reconstruction layers of MapAnything represents a promising direction 
-               for more targeted and expressive adaptation to stylistic variation. 
+               Finally, it would be worth revisiting our deliberate choice to restrict adaptation to the DINOv2 encoder (Section&nbsp;III):
+               once the encoder reliably preserves geometric signal under stylization, additionally applying LoRA to MapAnything's reconstruction layers
+               could enable more targeted and expressive adaptation to stylistic variation than the encoder-only setting we study here.
             </p>
             <p>A further limitation is that our study is deliberately scoped to geometry: we convert inputs to grayscale and do not attempt to recover color,
               so the question of color remains open. A natural next step is color recovery: rather than discarding color through grayscale conversion, one could learn to transfer stylized inputs into a photorealistic color distribution, yielding point clouds colored with faithful scene appearance and a direct measure of the color discrepancy between artistic and real imagery.

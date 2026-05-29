@@ -14,7 +14,7 @@
             We introduce a stylized multi-view benchmark derived from BlendedMVS using diffusion-based style transfer while preserving ground-truth geometry and camera poses. We evaluate several adaptation strategies for improving robustness under artistic domain shift, including feature-space normalization, AdaIN, and LoRA-based fine-tuning of the DINOv2 encoder.
           </p>
           <p>
-            While normalization-based methods consistently degrade performance, LoRA improves depth estimation on stylized inputs, reducing AbsRel from 0.154 to 0.128 on impressionist scenes while preserving performance on photographs. However, these gains do not fully translate to improved point cloud quality, highlighting the difficulty of achieving style-invariant geometric reasoning.
+            While normalization-based methods consistently degrade performance, LoRA fine-tuning, particularly with a consistency regularizer, improves depth estimation on stylized inputs, reducing median AbsRel from 0.122 to 0.101 on impressionist scenes while preserving performance on photographs. However, these gains do not fully translate to improved point cloud quality, highlighting the difficulty of achieving style-invariant geometric reasoning.
           </p>
           <p>Our benchmark and analyses provide a first step toward robust 3D reconstruction from artistic and historical imagery.</p>
         </div>
