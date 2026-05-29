@@ -12,8 +12,8 @@
           <div class="content has-text-justified">
             <p>
               We develop a benchmark of stylized multi-view images, since 3D reconstruction
-              datasets like <a href="https://github.com/YoYo000/BlendedMVS">BlendedMVS</a>
-              and <a href="https://roboimagedata.compute.dtu.dk/?page_id=36">DTU</a> provide
+              datasets like BlendedMVS&nbsp;<a href="#ref18">[18]</a>
+              and DTU&nbsp;<a href="#ref19">[19]</a> provide
               ground-truth geometry but lack artistic variance. 
             </p>
 
@@ -22,16 +22,15 @@
             <p>
               As shown in Figure&nbsp;<a href="#stylize-ba-slider">1</a>, we generate stylized variants (Impressionism, Oil
               painting, Engraving, Watercolor) of BlendedMVS while preserving 3D geometry.
-              To do this we use <em>TeleStyle</em>&nbsp;<a href="#ref18">[18]</a>,
-              a content-preserving style-transfer model built on Qwen-Image-Edit-2509&nbsp;<a href="#ref19">[19]</a>. It takes a content and a
+              To do this we use <em>TeleStyle</em>&nbsp;<a href="#ref20">[20]</a>,
+              a content-preserving style-transfer model built on Qwen-Image-Edit-2509&nbsp;<a href="#ref21">[21]</a>. It takes a content and a
               style reference image as input, producing a stylized output that preserves
               structure and composition while adopting the target aesthetic. To fit in the
               time and compute constraints, we stylize each frame in just four diffusion
               steps via a Lightning distillation for speed, keep only scenes with fewer than 150
               views, and stylize every fifth image. We then obtain a benchmark of 80 scenes
               which contain 15 views on average. All with the ground truth camera positions
-              and depth maps. The dataset can be found in
-              <a href="https://huggingface.co/datasets/sophiargh/StylizedBlendedMVS">this link</a>.
+              and depth maps. The dataset is publicly available (see the Benchmark link above).
             </p>
           </div>
 
@@ -234,8 +233,8 @@
               style removal from scene content. A plain img2img diffusion pipeline risks
               hallucinating scene content, while conditioning on text alone provides no
               structural anchor. We therefore extract a depth map from the stylized image
-              using a DPT estimator&nbsp;<a href="#ref20">[20]</a> and use it as a geometric condition for a Stable
-              Diffusion 1.5&nbsp;<a href="#ref21">[21]</a> ControlNet&nbsp;<a href="#ref22">[22]</a> img2img pipeline: the stylized image initializes the
+              using a DPT estimator&nbsp;<a href="#ref22">[22]</a> and use it as a geometric condition for a Stable
+              Diffusion 1.5&nbsp;<a href="#ref23">[23]</a> ControlNet&nbsp;<a href="#ref24">[24]</a> img2img pipeline: the stylized image initializes the
               diffusion process (preserving scene content) while the depth map constrains
               the geometry, and a photorealistic prompt &mdash; paired with a negative
               prompt penalising painterly and stylized textures &mdash; pushes the style
