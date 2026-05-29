@@ -33,7 +33,7 @@
                     <h5 class="subtitle has-text-centered">
                     <font size="-0.7">
                         <span style="font-weight:normal">
-                        ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the point clouds are in a different scale and position.
+                        <strong>Figure 4.</strong> ICP algorithm steps. Ground truth in red and predicted in blue. We see in the pre-aligned step that the point clouds are in a different scale and position.
                         </span>
                     </font>
                     </h5>
@@ -177,7 +177,7 @@
             <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
                 <img src="./static/results/stylized_ratio.png" alt="Stylization ratio results" style="width:100%; border-radius:4px;">
                 <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-                AbsRel as a function of the fraction of stylized images in the
+                <strong>Figure 5.</strong> AbsRel as a function of the fraction of stylized images in the
                 input set. We see how the performance drops when adding more stylized images.
                 </figcaption>
             </figure>
@@ -249,6 +249,11 @@
               update();
             })();
           </script>
+          <p class="has-text-centered" style="max-width:540px; margin:0.7rem auto 0; font-size:.9rem; color:#444;">
+            <strong>Figure 6.</strong> ControlNet destylization at increasing denoising strength
+            (drag the slider). Low strength preserves the painterly style; higher strength
+            suppresses it but degrades the underlying geometry.
+          </p>
           <!-- VIZ 4: Joint strength x ControlNet-conditioning-scale sweep. DINOv2 cosine
                similarity to the photo (higher = closer). -->
           <div class="content" style="max-width: 480px; margin: 1rem auto 0;">
@@ -301,7 +306,7 @@
             </table>
           </div>
           <p class="has-text-centered" style="max-width:540px; margin:0.8rem auto 3rem; font-size:0.85rem; color:#666;">
-            <em>Joint sweep of denoising strength (rows) and ControlNet conditioning scale
+            <strong>Figure 7.</strong> <em>Joint sweep of denoising strength (rows) and ControlNet conditioning scale
             (columns): median DINOv2 similarity to the photograph over 10 scenes &times; 4
             styles (88 matched samples per cell). Every cell sits below the matched stylized
             baseline (0.78, top row).</em>
@@ -512,11 +517,16 @@
                 update();
               })();
             </script>
+          <p class="has-text-centered" style="max-width:860px; margin:0.7rem auto 0; font-size:.9rem; color:#444;">
+            <strong>Figure 8.</strong> Original RGB, grayscale, and simulated historical film for
+            the same scene (drag either handle). The left handle separates RGB from grayscale; the
+            right separates grayscale from simulated film.
+          </p>
 
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
             <img src="./static/results/3im_1.png" alt="AbsRel across input variants" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 1.</strong> AbsRel across input variants (RGB, grayscale, simulated
+              <strong>Figure 9.</strong> AbsRel across input variants (RGB, grayscale, simulated
               film) for all styles. Overlapping error bars indicate no statistically significant
               difference. Lower is better
             </figcaption>
@@ -562,7 +572,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
             <img src="./static/results/results_norm.png" alt="Normalization ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 2.</strong> AbsRel as a function of number of normalized layers and
+              <strong>Figure 10.</strong> AbsRel as a function of number of normalized layers and
               cascading direction, across all five styles. The dashed line marks the unmodified
               baseline.
             </figcaption>
@@ -639,7 +649,7 @@
           <figure class="image" style="margin: 2rem auto; max-width: 720px; text-align:center;">
             <img src="./static/results/adaIn_results.png" alt="AdaIN ablation results" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 3.</strong> Performance under AdaIN configurations. End cascading
+              <strong>Figure 11.</strong> Performance under AdaIN configurations. End cascading
               preserves more geometric fidelity at low layer counts, but no configuration
               surpasses the unmodified baseline.
             </figcaption>
@@ -688,16 +698,16 @@
             feeding them to the model. MapAnything directly assigns input pixel colors to the
             reconstructed 3D points without processing them through the learned architecture, so
             stylized inputs produce point clouds tinted with artistic hues rather than true scene
-            appearance (Figure below). Because our goal here is to isolate the effect of artistic
+            appearance (Figure&nbsp;<a href="#fig-color-artifact">12</a>). Because our goal here is to isolate the effect of artistic
             domain shift on geometry, adding a learned color-correction or colorization
             stage would entangle two distinct sources of error, geometric distortion and color
             mismatch. Converting all inputs to grayscale removes color as a confounder and keeps the reconstructed geometry visually interpretable regardless of input style.
           </p>
 
-          <figure class="image" style="margin: 2rem auto; max-width: 680px; text-align:center;">
+          <figure id="fig-color-artifact" class="image" style="margin: 2rem auto; max-width: 680px; text-align:center;">
             <img src="./static/results/color-artifact.jpeg" alt="Color artifacts on the predictions" style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              Color artifacts introduced by the stylized images when predicting the point clouds using LoRA.
+              <strong>Figure 12.</strong> Color artifacts introduced by the stylized images when predicting the point clouds using LoRA.
             </figcaption>
           </figure>
 
@@ -735,10 +745,10 @@
           <p>
             This trade-off between depth accuracy and point cloud fidelity is further
             corroborated by qualitative inspection. The depth map comparison
-            (Figure&nbsp;<a href="#fig-depth-maps">5</a>) favors LoRA with consistency loss,
+            (Figure&nbsp;<a href="#fig-depth-maps">13</a>) favors LoRA with consistency loss,
             which produces the cleanest per-pixel depth estimates with the least edge and
             boundary artifacts. The point cloud comparison
-            (Figure&nbsp;<a href="#fig-mini-benchmark">6</a>) tells the opposite story: the
+            (Figure&nbsp;<a href="#fig-mini-benchmark">14</a>) tells the opposite story: the
             unmodified baseline struggles with stylized inputs, while plain LoRA yields the
             most visually coherent 3D reconstructions. Together, these observations highlight
             a fundamental tension — the consistency loss improves local, per-pixel depth
@@ -900,7 +910,7 @@
                  alt="Qualitative comparison of predicted depth maps across the three models"
                  style="width:100%; border-radius:4px;">
             <figcaption style="margin-top:.75rem; font-size:.9rem; color:#444;">
-              <strong>Figure 4.</strong> Qualitative comparison of predicted depth maps across
+              <strong>Figure 13.</strong> Qualitative comparison of predicted depth maps across
               the three models. The unmodified MapAnything baseline exhibits visible artifacts
               at object boundaries and edges. LoRA without consistency loss partially alleviates
               this, while LoRA with consistency loss produces the cleanest depth estimates, with
@@ -918,7 +928,7 @@
             sketches, and paintings of Notre-Dame de Paris.
             Since no ground-truth point clouds are available for the real historical and artistic sources,
              the benchmark is intended for qualitative comparison only. 
-             The figure below illustrates the reconstruction outputs across models. 
+             Figure&nbsp;<a href="#fig-mini-benchmark">14</a> illustrates the reconstruction outputs across models.
             </p>
             <h4 class="subtitle has-text-centered" style="margin-bottom: 0.75rem;">
                 <strong>Input</strong>
@@ -979,7 +989,7 @@
             <h5 class="subtitle has-text-centered">
                     <font size="-0.7">
                         <span style="font-weight:normal">
-                        Qualitative evaluation over our mini benchmark of real images. We see that the Unmodified MapAnything struggles with the reconstruction. The best reconstruction comes from the classic LoRA. The color view maps each input image's own pixels directly onto the geometry, so for stylized sources it carries their artistic hues rather than true scene color, while the grayscale view shows intensity only.
+                        <strong>Figure 14.</strong> Qualitative evaluation over our mini benchmark of real images. We see that the Unmodified MapAnything struggles with the reconstruction. The best reconstruction comes from the classic LoRA. The color view maps each input image's own pixels directly onto the geometry, so for stylized sources it carries their artistic hues rather than true scene color, while the grayscale view shows intensity only.
                         </span>
                     </font>
             </h5>

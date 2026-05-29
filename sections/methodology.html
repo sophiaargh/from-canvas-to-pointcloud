@@ -20,7 +20,7 @@
 
 
             <p>
-              As shown in the Figure below, we generate stylized variants (Impressionism, Oil
+              As shown in Figure&nbsp;<a href="#stylize-ba-slider">1</a>, we generate stylized variants (Impressionism, Oil
               painting, Engraving, Watercolor) of BlendedMVS while preserving 3D geometry.
               To do this we use <a href="https://tele-ai.github.io/TeleStyle/"><em>TeleStyle</em></a>&nbsp;<a href="#ref18">[18]</a>,
               a content-preserving style-transfer model built on Qwen-Image-Edit-2509&nbsp;<a href="#ref19">[19]</a>. It takes a content and a
@@ -92,6 +92,10 @@
               setPct(50);
             })();
           </script>
+          <p class="has-text-centered" style="margin-top:.75rem; font-size:.9rem; color:#444;">
+            <strong>Figure 1.</strong> Before/after stylization (drag the handle): the original
+            photographic scene compared with its Impressionism rendering produced by TeleStyle.
+          </p>
 
           <!-- VIZ 2: Style reference (top of each card) paired with the resulting
                stylized scene (bottom), for all four benchmark styles. -->
@@ -161,6 +165,11 @@
               </div>
             </div>
           </div>
+          <p class="has-text-centered" style="margin-top:.25rem; margin-bottom:1.5rem; font-size:.9rem; color:#444;">
+            <strong>Figure 2.</strong> The four benchmark styles. Each card pairs the style
+            reference (top) with TeleStyle's render of the same scene (bottom): Impressionism,
+            Oil painting, Engraving, and Watercolor.
+          </p>
           <h4 class="title is-5" id="method-mini-benchmark">Mini-Benchmark of Real Artistic Images</h4>
           <p>
               Moreover, to assess model performance on our target use case, we collect images of 
@@ -218,8 +227,8 @@
               We explored two destylization strategies. The first,
               <strong>Reverse TeleStyle</strong>, reuses the TeleStyle pipeline in the
               reverse direction: the stylized image serves as the content input
-              (Figure&nbsp;1 in the model prompt) and the original photograph acts as the
-              photorealistic style reference (Figure&nbsp;2), instructing the model to
+              and the original photograph acts as the
+              photorealistic style reference, instructing the model to
               transfer the photographic style back onto the content. The second strategy,
               <strong>ControlNet img2img</strong>, is motivated by the need to decouple
               style removal from scene content. A plain img2img diffusion pipeline risks
@@ -262,7 +271,7 @@
                       style="width: 100%; border-radius: 8px;"
                       alt="MapAnything architecture: 24-layer DINOv2 encoder feeding into 12 Alternating Attention blocks." />
                   <figcaption style="margin-top: 0.75rem; font-size: 0.9rem; color: #4a4a4a;">
-                    <em>MapAnything architecture: a 24-layer DINOv2 encoder feeds into 12 Alternating
+                    <strong>Figure 3.</strong> <em>MapAnything architecture: a 24-layer DINOv2 encoder feeds into 12 Alternating
                     Attention (AA) blocks. Our modifications target exclusively the DINOv2 encoder.
                     &ldquo;From front&rdquo; applies changes starting at layer&nbsp;0;
                     &ldquo;from end&rdquo; starts at layer&nbsp;23.</em>
