@@ -827,6 +827,70 @@
             </table>
           </div>
 
+          <p><strong>Point Cloud Reconstruction: Model Output vs. Depth Back-Projection (Mixed Scenario).</strong>
+          To further investigate the gap between per-pixel depth quality and 3D reconstruction
+          fidelity, we evaluated point clouds under two construction methods on the mixed scenario:
+          the model's native output (<em>model PC</em>), and point clouds back-projected from the
+          predicted depth maps using known camera intrinsics (<em>depth PC</em>). As shown in
+          Table&nbsp;<a href="#tab-lora-depth">4</a>, the two methods yield substantially different
+          F-score and Chamfer values across all three models. Depth-derived point clouds consistently
+          achieve better F-scores than model-native ones, while Chamfer distances are also markedly
+          lower — suggesting that back-projecting clean per-pixel depth predictions produces
+          geometrically tighter reconstructions. Notably, the baseline benefits the most from
+          depth back-projection in terms of Chamfer distance, whereas LoRA with consistency loss
+          narrows this gap, consistent with its stronger per-pixel depth accuracy observed earlier.
+          These results reinforce the view that MapAnything's native point cloud assembly introduces
+          additional sources of geometric error beyond what is captured by depth metrics alone.
+        </p>
+
+        <!-- LoRA depth back-projection table (mixed scenario only) -->
+        <h4 id="tab-lora-depth" class="title is-6">Table 4: Point cloud quality on the mixed scenario — model-native output vs. depth map back-projection. Median metrics over 80 scenes.</h4>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped">
+            <thead>
+              <tr>
+                <th rowspan="2"></th>
+                <th colspan="2" style="text-align:center; border-bottom: 2px solid #dbdbdb;">F-score ↑</th>
+                <th rowspan="2" style="border: none; background: transparent; width: 2rem;"></th>
+                <th colspan="2" style="text-align:center; border-bottom: 2px solid #dbdbdb;">Chamfer (m) ↓</th>
+              </tr>
+              <tr>
+                <th style="text-align:center;"><em>model PC</em></th>
+                <th style="text-align:center;"><em>depth PC</em></th>
+                <!-- spacer column, no th needed here since rowspan=2 covers it -->
+                <th style="text-align:center;"><em>model PC</em></th>
+                <th style="text-align:center;"><em>depth PC</em></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Baseline</td>
+                <td style="text-align:center;">0.060</td>
+                <td style="text-align:center;"><strong>0.123</strong></td>
+                <td style="border: none; background: transparent;"></td>
+                <td style="text-align:center;">0.264</td>
+                <td style="text-align:center;"><strong>0.150</strong></td>
+              </tr>
+              <tr>
+                <td>LoRA</td>
+                <td style="text-align:center;">0.060</td>
+                <td style="text-align:center;">0.112</td>
+                <td style="border: none; background: transparent;"></td>
+                <td style="text-align:center;">2.280</td>
+                <td style="text-align:center;">0.202</td>
+              </tr>
+              <tr>
+                <td>LoRA + Consistency</td>
+                <td style="text-align:center;">0.056</td>
+                <td style="text-align:center;">0.113</td>
+                <td style="border: none; background: transparent;"></td>
+                <td style="text-align:center;">0.267</td>
+                <td style="text-align:center;">0.203</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
           <!-- Depth maps figure -->
           <figure id="fig-depth-maps" class="image" style="margin: 2rem auto; max-width: 860px; text-align:center;">
             <img src="./static/images/lora/depth_maps.png"
