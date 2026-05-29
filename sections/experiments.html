@@ -10,7 +10,7 @@
 
               <p>
                 We evaluate the unmodified MapAnything on our curated benchmark. Because ground-truth (GT) point clouds
-                are not available for our dataset, we derive them from the GT camera poses and
+                are not available for our dataset which is based on BlendedMVS, we derive them from the GT camera poses and
                 depth maps.
               </p>
 
@@ -47,10 +47,12 @@
                 reported in Table <a href="#tab-baseline">1</a>. Notably, the
               photograph baseline achieves a <em>lower</em> F-score (0.046) than every
               stylized variant. This is a counter-intuitive result given that MapAnything was trained
-              on photographic imagery. One possible explanation is that the stylized inputs
-              reduce high-frequency texture noise, producing smoother depth estimates that
-              align more easily with the GT under the chosen threshold. We revisit this
-              hypothesis below.
+              on photographic imagery. One possible explanation is that the stylized inputs reduce high-frequency texture noise, 
+              producing smoother depth estimates that align more easily with the GT under the chosen threshold. 
+              This aligns with a broader hypothesis in aesthetic image representation research: that more formally structured images, such as paintings or sketches, 
+              are more compressible from an information-theoretic standpoint, and may therefore be easier for a trained model to form abstractions from, 
+              even if they offer less signal for generalization during training <a href="#ref-adam">[23]</a>. Under this view, stylized inputs may act as a form of implicit regularization, 
+              suppressing noisy photometric detail while preserving the geometric structure sufficient for reconstruction.
               </p>
               <!-- Baseline table -->
               <h4 id="tab-baseline" class="title is-6">Table 1: Unmodified MapAnything evaluated on our benchmark.</h4>
@@ -100,14 +102,14 @@
                 </table>
               </div>
               <p><strong>Validation on DTU.</strong><br>
-              To isolate reconstruction error from alignment artefacts and to verify our
-              pipeline on a dataset with native GT point clouds, we evaluate a two-scene
-              subset of DTU; results appear in Table <a href="#tab-dtu">2</a>.
+              To isolate reconstruction error from alignment artefacts and to verify our pipeline on a dataset 
+              with native ground-truth point clouds, which BlendedMVS does not provide, we evaluate a two-scene subset of DTU; results appear in Table <a href="#tab-dtu">2</a>.
               Although two scenes are insufficient for statistical
               conclusions, the experiment provides a sanity check and suggests that the low
               absolute F-scores on our benchmark partly reflect alignment residuals rather
-              than pure reconstruction failure: on DTU the photograph baseline reaches an
-              F-score of 0.244, substantially higher than on our dataset.
+              than pure reconstruction failure, especially on photographs: on DTU the photograph baseline reaches an
+              F-score of 0.244, substantially higher than on our dataset. This suggests that a meaningful share of the metric gap between photograph and stylized inputs 
+              on our benchmark reflects alignment degradation induced by style-driven reconstruction failure, rather than an independent source of experimental error.
               </p>
 
               <!-- DTU table -->
@@ -815,7 +817,7 @@
                   <td>0.111</td>
                   <td><strong>0.266</strong></td>
                   <td><strong>0.060</strong></td>
-                  <td>2.280</td>
+                  <td>0.280</td>
                 </tr>
                 <tr>
                   <td>&emsp;LoRA + Consistency</td>
@@ -831,8 +833,8 @@
           <p><strong>Point Cloud Reconstruction: Model Output vs. Depth Back-Projection (Mixed Scenario).</strong>
           To further investigate the gap between per-pixel depth quality and 3D reconstruction
           fidelity, we evaluated point clouds under two construction methods on the mixed scenario:
-          the model's native output (<em>model PC</em>), and point clouds back-projected from the
-          predicted depth maps using known camera intrinsics (<em>depth PC</em>). As shown in
+          the model's native output (<em>model PCD</em>), and point clouds back-projected from the
+          predicted depth maps using known camera intrinsics (<em>depth PCD</em>). As shown in
           Table&nbsp;<a href="#tab-lora-depth">4</a>, the two methods yield substantially different
           F-score and Chamfer values across all three models. Depth-derived point clouds consistently
           achieve better F-scores than model-native ones, while Chamfer distances are also markedly
@@ -856,11 +858,11 @@
                 <th colspan="2" style="text-align:center; border-bottom: 2px solid #dbdbdb;">Chamfer (m) ↓</th>
               </tr>
               <tr>
-                <th style="text-align:center;"><em>model PC</em></th>
-                <th style="text-align:center;"><em>depth PC</em></th>
+                <th style="text-align:center;"><em>model PCD</em></th>
+                <th style="text-align:center;"><em>depth PCD</em></th>
                 <!-- spacer column, no th needed here since rowspan=2 covers it -->
-                <th style="text-align:center;"><em>model PC</em></th>
-                <th style="text-align:center;"><em>depth PC</em></th>
+                <th style="text-align:center;"><em>model PCD</em></th>
+                <th style="text-align:center;"><em>depth PCD</em></th>
               </tr>
             </thead>
             <tbody>
@@ -877,7 +879,7 @@
                 <td style="text-align:center;">0.060</td>
                 <td style="text-align:center;">0.112</td>
                 <td style="border: none; background: transparent;"></td>
-                <td style="text-align:center;">2.280</td>
+                <td style="text-align:center;">0.280</td>
                 <td style="text-align:center;">0.202</td>
               </tr>
               <tr>
