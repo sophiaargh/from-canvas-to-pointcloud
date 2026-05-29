@@ -1,8 +1,2 @@
 .DS_store
 .idea
-
-# Large raw destylization output (501MB); only selected frames are copied into static/
-destylized_controlnet/
-
-# Raw destylization strength sweep (local only)
-/impressionism/
