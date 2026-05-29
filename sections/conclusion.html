@@ -18,9 +18,15 @@
               LoRA-based adaptation achieved the best results, improving depth estimation robustness on stylized inputs while preserving performance on photographs. 
               However, these gains did not consistently translate into improved point cloud quality, highlighting the difficulty of achieving globally coherent style-invariant reconstruction.
             </p>
-            <p>Our work is limited by the use of synthetic stylization, limited compute resources, and lightweight adaptation methods. 
+            <p>Our work is limited by the use of synthetic stylization, limited time and compute resources, and lightweight adaptation methods. 
               Future work could explore larger-scale training, real historical artistic datasets, and stronger end-to-end adaptation strategies. 
-              Beyond cultural heritage reconstruction, style-robust 3D reconstruction could also benefit robotics, simulation, and reconstruction from synthetic or generated imagery.
+              It would also be valuable to identify which inputs were most out-of-domain using distributional distance metrics such as Maximum Mean Discrepancy (MMD),
+               which could help diagnose whether the DINOv2 encoder or the MapAnything reconstruction layers are most hostile to multi-style inputs. 
+               Finally, applying LoRA not only to the DINOv2 encoder but also to the reconstruction layers of MapAnything represents a promising direction 
+               for more targeted and expressive adaptation to stylistic variation. 
+            </p>
+            <p>A further limitation is that our study is deliberately scoped to geometry: we convert inputs to grayscale and do not attempt to recover color,
+              so the question of color remains open. A natural next step is color recovery: rather than discarding color through grayscale conversion, one could learn to transfer stylized inputs into a photorealistic color distribution, yielding point clouds colored with faithful scene appearance and a direct measure of the color discrepancy between artistic and real imagery.
             </p>
           </div>
         </div>
