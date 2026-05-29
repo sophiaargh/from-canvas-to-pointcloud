@@ -683,12 +683,13 @@
           </p>
           <p>
             A key preprocessing decision was to convert all input images to grayscale before
-            feeding them to the model. Since MapAnything directly assigns input pixel colors to
-            the reconstructed 3D points without processing them through the learned architecture,
-            stylized images would produce point clouds colored with artistic hues rather than
-            true scene appearance, as seen in the Figure below. Rather than introducing an additional color-correction
-            mechanism, we simply convert all inputs to grayscale, ensuring the reconstructed
-            geometry is visually interpretable regardless of the input style.
+            feeding them to the model. MapAnything directly assigns input pixel colors to the
+            reconstructed 3D points without processing them through the learned architecture, so
+            stylized inputs produce point clouds tinted with artistic hues rather than true scene
+            appearance (Figure below). Because our goal here is to isolate the effect of artistic
+            domain shift on geometry, adding a learned color-correction or colorization
+            stage would entangle two distinct sources of error, geometric distortion and color
+            mismatch. Converting all inputs to grayscale removes color as a confounder and keeps the reconstructed geometry visually interpretable regardless of input style.
           </p>
 
           <figure class="image" style="margin: 2rem auto; max-width: 680px; text-align:center;">
@@ -976,7 +977,7 @@
             <h5 class="subtitle has-text-centered">
                     <font size="-0.7">
                         <span style="font-weight:normal">
-                        Qualitative evaluation over our mini benchmark of real images. We see that the Unmodified MapAnything struggles with the reconstruction. The best reconstruction comes from the classic LoRA.
+                        Qualitative evaluation over our mini benchmark of real images. We see that the Unmodified MapAnything struggles with the reconstruction. The best reconstruction comes from the classic LoRA. The color view maps each input image's own pixels directly onto the geometry, so for stylized sources it carries their artistic hues rather than true scene color, while the grayscale view shows intensity only.
                         </span>
                     </font>
             </h5>
